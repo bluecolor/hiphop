@@ -13,7 +13,7 @@ div(
       v-layout(row='', wrap='')
         v-flex(xs12='' v-for='(u, i) in users',)
           v-card
-            v-card-title(class="blue white--text")
+            v-card-title(:class="cardTitleClass(u)")
               .headline {{u.name}}
             v-card-text
               div
@@ -22,7 +22,7 @@ div(
             v-card-actions
               v-btn(route :to="'/user/' + u.id") Details
               v-spacer
-              v-btn(color="error", @click="onRemove(con.id)") Delete
+              v-btn(v-show="!u.system" color="error", @click="onRemove(u.id)") Delete
   v-btn(fixed='', dark='', fab='', bottom='', right='', color='pink' route, to="/user")
     v-icon add
 </template>
@@ -48,6 +48,12 @@ export default {
     ...mapActions('notifications', [
       'snack', 'snackSuccess', 'snackError', 'snackInfo', 'snackWarning'
     ]),
+    cardTitleClass (u) {
+      if (u.system) {
+        return 'red accent-1 white--text'
+      }
+      return 'blue white--text'
+    },
     onRemove (id) {
       this.remove(id).then(() => {
         this.snackSuccess('Deleted user')

@@ -22,6 +22,10 @@ export default new Router({
       path: '/users',
       component: Users
     }, {
+      path: '/user/:id',
+      props: true,
+      component: User
+    }, {
       path: '/connection',
       component: Connection
     }, {

@@ -61,15 +61,15 @@ v-app(light='')
         items: [{
           icon: 'cloud',
           title: 'Connections',
-          to: 'connections'
+          to: '/connections'
         }, {
           icon: 'storage',
           title: 'Deployments',
-          to: 'deployments'
+          to: '/deployments'
         }, {
           icon: 'perm_identity',
           title: 'Users',
-          to: 'users'
+          to: '/users'
         }],
         miniVariant: false,
         right: true,

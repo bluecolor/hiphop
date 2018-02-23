@@ -68,7 +68,7 @@ export default {
     init () {
       if (!this.id) { return }
       const id = parseInt(this.id)
-      this.connection = _.chain(this.users).find({id}).cloneDeep().value()
+      this.user = _.chain(this.users).find({id}).cloneDeep().value()
     }
   },
   computed: {

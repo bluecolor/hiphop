@@ -74,7 +74,7 @@
                 v-btn(color='primary') Details
                 v-spacer
       v-layout(row='')
-        v-btn(v-show="s!==4" @click="" color="error") cancel
+        v-btn(v-show="s!==4" to="/deployments" color="error") cancel
         v-btn(v-show="s!==1 && s!==4" @click="back" color="warning") back
         v-btn(v-show="s <= 2" @click="next" color="primary" :disabled="isDisabled") continue
         v-spacer
