@@ -12,8 +12,8 @@ import org.hibernate.annotations.FetchMode
 import org.springframework.web.multipart.MultipartFile
 
 
-@Entity(name="deployment_orders")
-class DeploymentOrder {
+@Entity(name="deployment_order_steps")
+class DeploymentOrderStep {
 
   def this(id: Long) {
     this()
@@ -26,22 +26,19 @@ class DeploymentOrder {
   var id: Long = _
 
   @BeanProperty
+  @Fetch(value= FetchMode.SELECT)
+  @ManyToOne
+  var order: DeploymentOrder = _
+
+  @BeanProperty
   var status: String = _
 
   @BeanProperty
   @Fetch(value= FetchMode.SELECT)
-  @ManyToOne
-  var deployment: Deployment = _
-
-  @BeanProperty
-  @Fetch(value= FetchMode.SELECT)
-  @OneToMany(mappedBy = "order")
-  var steps: java.util.Set[DeploymentOrderStep] = _
-
-  @ManyToOne
-  @BeanProperty
-  var connection: Connection = _
+  @ManyToOne()
+  var file: io.blue.model.File = _
 
   @BeanProperty
   var message: String = _
+
 }

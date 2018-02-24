@@ -1,27 +1,25 @@
 package io.blue.model
 
 object Status {
-  val IDLE    = "IDLE" 
-  val RUNNING = "RUNNING" 
+  val RUNNING = "RUNNING"
   val SUCCESS = "SUCCESS"
   val ERROR   = "ERROR"
-  val KILLED  = "KILLED"
   val PAUSED  = "PAUSED"
-  val BLOCKED = "BLOCKED" 
-  val STOPPED = "STOPPED" 
+  val BLOCKED = "BLOCKED"
+  val STOPPED = "STOPPED"
   val DONE    = "DONE"
+  val WAITING = "WAITING"
 
-  val valid = Map( 
-    IDLE -> List(IDLE,RUNNING,DONE,BLOCKED),
-    RUNNING -> List(ERROR, KILLED,SUCCESS),
-    SUCCESS -> List(IDLE,RUNNING),
-    ERROR -> List(IDLE,RUNNING,DONE),
-    KILLED -> List(KILLED,IDLE,RUNNING,DONE),
-    PAUSED -> List(PAUSED,IDLE,RUNNING),
-    STOPPED-> List(STOPPED,IDLE,RUNNING),
-    BLOCKED -> List(BLOCKED,IDLE, DONE),
-    DONE -> List(DONE,IDLE,ERROR,BLOCKED,KILLED)
-  )  
+  val valid = Map(
+    WAITING -> List(WAITING,RUNNING,DONE,BLOCKED),
+    RUNNING -> List(ERROR, SUCCESS),
+    SUCCESS -> List(WAITING,RUNNING),
+    ERROR -> List(WAITING, RUNNING, DONE),
+    PAUSED -> List(PAUSED, WAITING, RUNNING),
+    STOPPED-> List(STOPPED,WAITING,RUNNING),
+    BLOCKED -> List(BLOCKED,WAITING, DONE),
+    DONE -> List(DONE,WAITING,ERROR,BLOCKED)
+  )
 
   def isValid(from: String, to: String): Boolean = valid.get(from).get.contains(to)
 

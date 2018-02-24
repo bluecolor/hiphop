@@ -63,7 +63,7 @@ const actions = {
 // mutations
 const mutations = {
   [LOAD] (state, records) {
-    state.all = records
+    state.all = _.orderBy(records, ['username'], ['asc'])
   },
   [CREATE] (state, record) {
     state.all.push(record)

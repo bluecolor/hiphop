@@ -9,5 +9,5 @@ import scala.collection.JavaConverters._
 import io.blue.model._
 
 @Repository
-trait DeploymentOrderRepository extends JpaRepository[DeploymentOrder, java.lang.Long] {
+trait DeploymentRepository extends JpaRepository[Deployment, java.lang.Long] {
 }

@@ -16,13 +16,25 @@ import io.blue.repository._
 
 @Service
 @Transactional
-class DeploymentService @Autowired()(val deploymentOrderRepository: DeploymentOrderRepository) {
+class DeploymentService @Autowired()(val deploymentRepository: DeploymentRepository) {
 
-  private val log:Logger  = LoggerFactory.getLogger(MethodHandles.lookup.lookupClass)
+  private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup.lookupClass)
 
-  def createOrder (order: DeploymentOrder) = {
-    // deploymentOrderRepository.save(order)
-    println(order.files.length)
+  @(Autowired @setter)
+  private var userService: UserService = _
+
+  def request(r: DeploymentRequest) = {
+    var deployment = new Deployment
+    deployment.status = Status.WAITING
+    deployment.user = userService.findMe
+    deployment.ignoreOnFail = r.ignoreOnFail
+    deployment.files = new java.util.HashSet(r.files.map(io.blue.model.File.getFile(_)).toList.map{ f =>
+      f.deployment = deployment
+      f
+    })
+    deployment.connections = r.connections
+    deployment.requestDate = new java.util.Date
+    deploymentRepository.save(deployment)
   }
 
 }

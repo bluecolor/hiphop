@@ -2,6 +2,7 @@ package io.blue.model
 
 import scala.collection.JavaConversions._
 import java.util.Date
+import com.fasterxml.jackson.annotation._
 import javax.persistence._
 import javax.validation.constraints.{NotNull}
 import org.hibernate.annotations.Type
@@ -11,9 +12,17 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.springframework.web.multipart.MultipartFile
 
+object File {
+  def getFile(f: MultipartFile) = {
+    var file = new File
+    file.name = f.getOriginalFilename
+    file.data = f.getBytes
+    file
+  }
+}
 
-@Entity(name="deployment_orders")
-class DeploymentOrder {
+@Entity(name="files")
+class File {
 
   def this(id: Long) {
     this()
@@ -26,22 +35,15 @@ class DeploymentOrder {
   var id: Long = _
 
   @BeanProperty
-  var status: String = _
+  var name: String = _
 
   @BeanProperty
-  @Fetch(value= FetchMode.SELECT)
-  @ManyToOne
+  @JsonIgnore
+  @Column(columnDefinition = "binary(max)")
+  var data: Array[Byte]  = _
+
+  @BeanProperty
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
+  @JsonIgnore
   var deployment: Deployment = _
-
-  @BeanProperty
-  @Fetch(value= FetchMode.SELECT)
-  @OneToMany(mappedBy = "order")
-  var steps: java.util.Set[DeploymentOrderStep] = _
-
-  @ManyToOne
-  @BeanProperty
-  var connection: Connection = _
-
-  @BeanProperty
-  var message: String = _
 }

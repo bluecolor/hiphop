@@ -85,7 +85,6 @@
 <script>
   import {mapActions, mapGetters} from 'vuex'
   import _ from 'lodash'
-  import axios from 'axios'
 
   export default {
     data () {
@@ -114,8 +113,11 @@
       }
     },
     methods: {
+      ...mapActions('deployments', [
+        'request'
+      ]),
       ...mapActions('notifications', [
-        'snackWarning'
+        'snackWarning', 'snackSuccess', 'snackError'
       ]),
       next () {
         if (this.s < 4) {
@@ -128,18 +130,22 @@
         }
       },
       deploy () {
-        this.s += 1
+        this.next()
         let form = new FormData()
-
         _.each(this.files, (f) => {
           form.append('files', f._file)
         })
         _.each(this.selectedConnections, (c) => {
           form.append('connections', c.id)
-          // console.log(c)
         })
-        const config = { headers: { 'Content-Type': 'multipart/form-data' } }
-        axios.post('/api/v1/deployments/orders', form, config)
+
+        this.request(form).then(() => {
+          this.snackSuccess('Deployment request created')
+          window.history.back()
+        }).catch(e => {
+          console.log(e)
+          this.snackError('Failed to create deployment request')
+        })
       },
       onFileSelect (e) {
         if (this.files.length > 2) {

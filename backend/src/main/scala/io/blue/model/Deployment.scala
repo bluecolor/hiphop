@@ -24,14 +24,15 @@ class Deployment {
   var id: Long = _
 
   @BeanProperty
-  @Fetch(value= FetchMode.JOIN)
-  @ManyToOne(optional = true, fetch = FetchType.EAGER)
-  var connection: Connection = _
+  var status: String = Status.WAITING
+
+  @BeanProperty
+  var message: String = _
 
   @BeanProperty
   @Fetch(value= FetchMode.JOIN)
-  @ManyToOne(optional = true, fetch = FetchType.EAGER)
-  var order: DeploymentOrder = _
+  @OneToMany(fetch = FetchType.EAGER)
+  var connections: java.util.List[Connection] = _
 
   @BeanProperty
   var startDate: Date = _
@@ -40,9 +41,23 @@ class Deployment {
   var endDate: Date = _
 
   @BeanProperty
-  var status: String = _
+  var requestDate: Date = new Date
 
   @BeanProperty
-  var message: String = _
+  @Fetch(value= FetchMode.JOIN)
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "deployment")
+  var orders: java.util.Set[DeploymentOrder] = _
+
+  @BeanProperty
+  @Fetch(value= FetchMode.JOIN)
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "deployment", cascade=Array(CascadeType.ALL) )
+  var files: java.util.Set[io.blue.model.File] = _
+
+  @BeanProperty
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
+  var user: User = _
+
+  @BeanProperty
+  var ignoreOnFail: Boolean = _
 
 }

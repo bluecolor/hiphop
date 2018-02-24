@@ -27,8 +27,7 @@ export default {
   data () {
     return {
       connection: {
-        id: null,
-        name: null,
+        name: undefined,
         disabled: false,
         url: '',
         username: '',

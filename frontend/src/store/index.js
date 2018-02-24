@@ -8,6 +8,7 @@ import users from './modules/users'
 import connections from './modules/connections'
 import app from './modules/app'
 import notifications from './modules/notifications'
+import deployments from './modules/deployments'
 
 Vue.use(Vuex)
 
@@ -22,6 +23,7 @@ export default new Vuex.Store({
     users,
     connections,
     app,
-    notifications
+    notifications,
+    deployments
   }
 })

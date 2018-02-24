@@ -14,14 +14,10 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping(Array("/api/v1/deployments"))
-class DeplymentController  @Autowired()(private val deploymentService: DeploymentService) {
+class DeploymentController  @Autowired()(private val deploymentService: DeploymentService) {
 
   @Secured(Array("ROLE_OPERATOR","ROLE_MASTER"))
-  @PostMapping(value = Array("/orders"))
-  def createOrder(
-    @ModelAttribute order: DeploymentOrder
-  ) = {
-    println(order.files.size)
-  }
-
+  @PostMapping(value = Array("/request"))
+  def request (@ModelAttribute r: DeploymentRequest) =
+    deploymentService.request(r)
 }

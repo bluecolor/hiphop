@@ -92,7 +92,7 @@ const actions = {
 // mutations
 const mutations = {
   [LOAD] (state, records) {
-    state.all = records
+    state.all = _.orderBy(records, ['name'], ['asc'])
   },
   [SAVE] (state, record) {
     const c = _.find(state.all, {id: record.id})
