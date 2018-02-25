@@ -24,6 +24,10 @@ class Deployment {
   var id: Long = _
 
   @BeanProperty
+  @NotNull
+  var name: String = _
+
+  @BeanProperty
   var status: String = Status.WAITING
 
   @BeanProperty

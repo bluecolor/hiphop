@@ -59,6 +59,10 @@ v-app(light='')
           }
         ],
         items: [{
+          icon: 'home',
+          title: 'Home',
+          to: '/'
+        }, {
           icon: 'cloud',
           title: 'Connections',
           to: '/connections'
@@ -71,7 +75,7 @@ v-app(light='')
           title: 'Users',
           to: '/users'
         }],
-        miniVariant: false,
+        miniVariant: true,
         right: true,
         rightDrawer: false,
         title: ''

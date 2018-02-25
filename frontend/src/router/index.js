@@ -4,6 +4,9 @@ import Hello from '@/components/Hello'
 import Connection from '@/components/connection/Connection'
 import Connections from '@/components/connection/Connections'
 import Deployment from '@/components/deployment/Deployment'
+import Deployments from '@/components/deployment/Deployments'
+import DeploymentOrders from '@/components/deployment/DeploymentOrders'
+import DeploymentOrderSteps from '@/components/deployment/DeploymentOrderSteps'
 import User from '@/components/user/User'
 import Users from '@/components/user/Users'
 
@@ -36,9 +39,17 @@ export default new Router({
       path: '/connections',
       component: Connections
     }, {
-      path: '/deployments',
-      name: 'Deployments',
+      path: '/deployment',
       component: Deployment
+    }, {
+      path: '/deployments',
+      component: Deployments
+    }, {
+      path: '/deployments/:id/orders',
+      component: DeploymentOrders
+    }, {
+      path: '/deployments/:id/orders/:id/steps',
+      component: DeploymentOrderSteps
     }
   ]
 })
