@@ -1,7 +1,10 @@
 <template lang="pug">
 
-div
-  form.content
+div(
+  style="max-width: 700px; margin: auto;"
+  class="lighten-3"
+)
+  v-form
     v-text-field(label='Name', v-model='connection.name', required='')
     v-text-field(label='Jdbc Url', v-model='connection.url',  required='')
     v-text-field(label='Username', v-model='connection.username',  required='')

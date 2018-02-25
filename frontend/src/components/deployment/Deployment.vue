@@ -56,9 +56,14 @@
                   td.text-xs-left {{ props.item.username }}
                   td.text-xs-left {{ props.item.url }}
         v-stepper-content(step='3')
-          v-layout(row wrap style="margin:20px;")
-            v-flex(xs6)
-              v-switch(label="Ignore on failure" color="primary" v-model="options.ignoreOnFail")
+          div(
+            style="max-width: 700px; margin: auto;"
+            class="lighten-3"
+          )
+            v-form
+              v-text-field(label='Name', v-model='options.name', required='')
+              v-flex(xs6)
+                v-switch(label="Ignore on failure" color="primary" v-model="options.ignoreOnFail")
         v-stepper-content(step='4')
           v-card.mb-5.elevation-0(height='400px')
             v-card-title(primary-title='')
@@ -73,7 +78,7 @@
                 v-spacer
                 v-btn(color='primary') Details
                 v-spacer
-      v-layout(row='')
+      v-layout(row='' style="margin:0 30px 0 30px")
         v-btn(v-show="s!==4" to="/deployments" color="error") cancel
         v-btn(v-show="s!==1 && s!==4" @click="back" color="warning") back
         v-btn(v-show="s <= 2" @click="next" color="primary" :disabled="isDisabled") continue

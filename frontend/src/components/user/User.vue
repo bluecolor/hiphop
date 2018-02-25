@@ -1,7 +1,9 @@
 <template lang="pug">
-
-div
-  form.content
+div(
+  style="max-width: 700px; margin: auto;"
+  class="lighten-3"
+)
+  v-form
     v-text-field(label='Name', v-model='user.name', required='')
     v-text-field(label='Username', v-model='user.username',  required='')
     v-text-field(label='Email', v-model='user.email',  required='')
