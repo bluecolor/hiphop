@@ -37,7 +37,8 @@ div(
                   v-btn(icon="" ripple="")
                     v-icon(color="grey lighten-1") info
             v-card-actions
-              v-btn(@click='onBack') Back
+              v-btn(icon='' @click='onBack' style="margin-left:15px")
+                v-icon(color="grey darken-1", large='') arrow_back
               v-spacer
               v-pagination(:length="6" v-model="page")
 
