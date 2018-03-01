@@ -21,7 +21,7 @@ v-app(light='')
     v-spacer
     v-btn(icon='', light='')
       v-icon settings
-    a(href="/logout" icon='', light='' style="text-decoration:none;")
+    v-btn(icon='', light='' @click="logut")
       v-icon(color="red") exit_to_app
   v-content.content
     router-view
@@ -104,8 +104,8 @@ v-app(light='')
       }
     },
     methods: {
-      click () {
-        console.log('clikc')
+      logut () {
+        window.location = '/logout'
       }
     }
   }

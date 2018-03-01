@@ -19,7 +19,7 @@ div(
               v-text-field.elevation-0(v-on:blur="searchFocus(false)", v-on:focus="searchFocus(true)" :style="searchStyle" light="" solo="" clearable="" prepend-icon="search" placeholder="Type keyword...")
               v-dialog.date-dialog(ref="dialog" persistent="" v-model="modal" lazy="" full-width="" width="310px" :return-value.sync="date")
                 v-btn(icon="" slot="activator")
-                  v-icon filter_list
+                  v-icon(:color="(isFiltered ? 'red': 'white')") filter_list
                 v-date-picker(
                   :event-color="date => date[9] % 2 ? 'red' : 'yellow'"
                   :events="deploymentEvents"
@@ -29,7 +29,7 @@ div(
                 )
                   v-spacer
                   v-btn(flat="" color="primary" @click="modal = false") Cancel
-                  v-btn(flat="" color="primary" @click="modal = false") Clear
+                  v-btn(flat="" color="primary" @click="onClearDateFilter") Clear
                   v-btn(flat="" color="primary" @click="onDateFilter") OK
             v-list(two-line="" subheader="")
               v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title" @click="")
@@ -54,11 +54,15 @@ div(
 
 <script>
 
+import _ from 'lodash'
 import {mapGetters} from 'vuex'
 
 export default {
   data () {
     return {
+      filter: {
+        date: undefined
+      },
       show: true,
       date: undefined,
       modal: false,
@@ -70,6 +74,9 @@ export default {
     ...mapGetters('deployments', [
       'deployments'
     ]),
+    isFiltered () {
+      return (this.filter.date !== undefined)
+    },
     items () {
       return [
         { id: 1, icon: 'flash_on', iconClass: 'blue white--text', title: 'Vacation itinerary', subtitle: 'Jan 20, 2014' },
@@ -87,10 +94,14 @@ export default {
     onItemClick () {
     },
     onDateFilter () {
+      this.filter.date = _.clone(this.date)
+      this.modal = false
+    },
+    onClearDateFilter () {
+      this.filter.date = undefined
       this.modal = false
     },
     deploymentEvents (date) {
-      console.log('deploymentEvents')
       const [,, day] = date.split('-')
       return parseInt(day, 10) % 3 === 0
     }

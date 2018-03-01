@@ -17,7 +17,7 @@ div(
               v-toolbar-title(class="white--text") Steps
               v-spacer
             v-list(two-line="" subheader="")
-              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title" :to="`orders/${item.id}/steps`")
+              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title" @click="")
                 v-list-tile-avatar
                   v-icon(:class="[item.iconClass]") {{ item.icon }}
                 v-list-tile-content

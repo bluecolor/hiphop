@@ -19,7 +19,7 @@ div(
               v-select.elevation-0(
                 clearable="true"
                 :items="connections"
-                v-model="a1"
+                v-model="filters.connection"
                 label="Connection"
                 autocomplete=""
                 item-text="name"
@@ -27,7 +27,7 @@ div(
                 solo
               )
             v-list(two-line="" subheader="")
-              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title")
+              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title" @click="")
                 v-list-tile-avatar
                   v-icon(:class="[item.iconClass]") {{ item.icon }}
                 v-list-tile-content
@@ -53,6 +53,9 @@ import {mapGetters} from 'vuex'
 export default {
   data () {
     return {
+      filters: {
+        connection: undefined
+      },
       page: 1
     }
   },
