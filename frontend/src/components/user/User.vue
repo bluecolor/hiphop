@@ -4,13 +4,13 @@ div(
   class="lighten-3"
 )
   v-form
-    v-text-field(label='Name', v-model='user.name', required='')
-    v-text-field(label='Username', v-model='user.username',  required='')
-    v-text-field(label='Email', v-model='user.email',  required='')
+    v-text-field(label='Name', v-model='user.name', :rules="[rules.required]")
+    v-text-field(label='Username', v-model='user.username',  :rules="[rules.required]")
+    v-text-field(label='Email', v-model='user.email',  :rules="[rules.required, rules.email]")
     v-layout(row='')
       v-btn(@click='onClose') close
       v-spacer
-      v-btn(@click='onSave') save
+      v-btn(@click='onSave' :disabled="!isValid") save
 
 </template>
 
@@ -25,6 +25,13 @@ export default {
   props: ['id'],
   data () {
     return {
+      emailPattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      rules: {
+        required: (value) => !!value || '',
+        email: (value) => {
+          return this.emailPattern.test(value) || 'Invalid e-mail.'
+        }
+      },
       user: {
         id: undefined,
         name: undefined,
@@ -76,7 +83,15 @@ export default {
   computed: {
     ...mapGetters('users', [
       'users'
-    ])
+    ]),
+    isValid () {
+      return (
+        this.user.name &&
+        this.user.username &&
+        this.user.email &&
+        this.emailPattern.test(this.user.email)
+      )
+    }
   },
   mounted () {
     this.init()

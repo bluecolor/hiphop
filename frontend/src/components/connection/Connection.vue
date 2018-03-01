@@ -5,16 +5,16 @@ div(
   class="lighten-3"
 )
   v-form
-    v-text-field(label='Name', v-model='connection.name', required='')
-    v-text-field(label='Jdbc Url', v-model='connection.url',  required='')
-    v-text-field(label='Username', v-model='connection.username',  required='')
-    v-text-field(label='Password', v-model='connection.password',  required='')
+    v-text-field(label='Name', v-model='connection.name', :rules="[rules.required]")
+    v-text-field(label='Jdbc Url', v-model='connection.url', :rules="[rules.required]")
+    v-text-field(label='Username', v-model='connection.username',  :rules="[rules.required]")
+    v-text-field(label='Password', v-model='connection.password',  :rules="[rules.required]")
     v-switch(label="Disabled" color="red darken-3" v-model="connection.disabled")
     v-layout(row='')
       v-btn(@click='onClose') close
       v-spacer
-      v-btn(@click='onTest') test
-      v-btn(@click='onSave') save
+      v-btn(@click='onTest' :disabled="!isValid") test
+      v-btn(@click='onSave' :disabled="!isValid") save
 
 </template>
 
@@ -29,6 +29,9 @@ export default {
   props: ['id'],
   data () {
     return {
+      rules: {
+        required: (value) => !!value || ''
+      },
       connection: {
         name: undefined,
         disabled: false,
@@ -94,7 +97,15 @@ export default {
   computed: {
     ...mapGetters('connections', [
       'connections'
-    ])
+    ]),
+    isValid () {
+      return (
+        this.connection.name &&
+        this.connection.url &&
+        this.connection.username &&
+        this.connection.password
+      )
+    }
   },
   mounted () {
     this.init()

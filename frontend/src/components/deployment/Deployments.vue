@@ -32,15 +32,18 @@ div(
                   v-btn(flat="" color="primary" @click="modal = false") Clear
                   v-btn(flat="" color="primary" @click="onDateFilter") OK
             v-list(two-line="" subheader="")
-              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title" :to="`deployments/${item.id}/orders`")
+              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title" @click="")
                 v-list-tile-avatar
                   v-icon(:class="[item.iconClass]") {{ item.icon }}
                 v-list-tile-content
                   v-list-tile-title {{ item.title }}
                   v-list-tile-sub-title {{ item.subtitle }}
                 v-list-tile-action
+                  v-btn(icon="" ripple="" :to="`deployments/${item.id}/orders`")
+                    v-icon(color="grey lighten-1") more_horiz
+                v-list-tile-action
                   v-btn(icon="" ripple="")
-                    v-icon(color="grey lighten-1") info
+                    v-icon(color="grey lighten-1") file_download
             v-card-actions
               v-spacer
               v-pagination(:length="6" v-model="page")
@@ -56,6 +59,7 @@ import {mapGetters} from 'vuex'
 export default {
   data () {
     return {
+      show: true,
       date: undefined,
       modal: false,
       page: 1,

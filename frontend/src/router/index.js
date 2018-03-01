@@ -48,7 +48,7 @@ export default new Router({
       path: '/deployments/:id/orders',
       component: DeploymentOrders
     }, {
-      path: '/deployments/:id/orders/:id/steps',
+      path: '/deployments/:deploymentId/orders/:orderId/steps',
       component: DeploymentOrderSteps
     }
   ]

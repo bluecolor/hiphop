@@ -27,15 +27,15 @@ div(
                 solo
               )
             v-list(two-line="" subheader="")
-              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title" :to="`orders/${item.id}/steps`")
+              v-list-tile(ripple="" avatar="" v-for="item in items" :key="item.title")
                 v-list-tile-avatar
                   v-icon(:class="[item.iconClass]") {{ item.icon }}
                 v-list-tile-content
                   v-list-tile-title {{ item.title }}
                   v-list-tile-sub-title {{ item.subtitle }}
                 v-list-tile-action
-                  v-btn(icon="" ripple="")
-                    v-icon(color="grey lighten-1") info
+                  v-btn(icon="" ripple="" :to="`orders/${item.id}/steps`")
+                    v-icon(color="grey lighten-1") more_horiz
             v-card-actions
               v-btn(icon='' @click='onBack' style="margin-left:15px")
                 v-icon(color="grey darken-1", large='') arrow_back
