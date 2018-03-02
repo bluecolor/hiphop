@@ -6,6 +6,7 @@ v-app(light='')
     :color="snack.color"
     v-model="snack.display"
   ) {{snack.text}}
+  settings(:show="settings" v-on:hide="settings=false")
   v-navigation-drawer(fixed='', :mini-variant='miniVariant', :clipped='clipped', v-model='drawer', app='')
     v-list.pt-0
       v-list-tile(value='true', v-for='(item, i) in items', :key='i', exact='', router :to='item.to')
@@ -19,7 +20,7 @@ v-app(light='')
       v-icon(v-html="miniVariant ? 'chevron_right' : 'chevron_left'")
     v-toolbar-title(v-text='title')
     v-spacer
-    v-btn(icon='', light='')
+    v-btn(icon='', light='', @click="settings = true")
       v-icon settings
     v-btn(icon='', light='' @click="logut")
       v-icon(color="red") exit_to_app
@@ -39,10 +40,12 @@ v-app(light='')
 
 <script>
   import {mapGetters} from 'vuex'
+  import Settings from '@/components/settings/Settings'
 
   export default {
     data () {
       return {
+        settings: false,
         clipped: true,
         drawer: true,
         fixed: true,
@@ -107,6 +110,9 @@ v-app(light='')
       logut () {
         window.location = '/logout'
       }
+    },
+    components: {
+      Settings
     }
   }
 </script>
