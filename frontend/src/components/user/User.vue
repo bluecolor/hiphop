@@ -1,16 +1,18 @@
 <template lang="pug">
 div(
-  style="max-width: 700px; margin: auto;"
+  style="max-width: 700px; margin: auto; margin-top:20px;"
   class="lighten-3"
 )
-  v-form
-    v-text-field(label='Name', v-model='user.name', :rules="[rules.required]")
-    v-text-field(label='Username', v-model='user.username',  :rules="[rules.required]")
-    v-text-field(label='Email', v-model='user.email',  :rules="[rules.required, rules.email]")
-    v-layout(row='')
-      v-btn(@click='onClose') close
-      v-spacer
-      v-btn(@click='onSave' :disabled="!isValid") save
+  v-card
+    v-card-text
+      v-form
+        v-text-field(label='Name', v-model='user.name', :rules="[rules.required]")
+        v-text-field(label='Username', v-model='user.username',  :rules="[rules.required]")
+        v-text-field(label='Email', v-model='user.email',  :rules="[rules.required, rules.email]")
+        v-layout(row='')
+          v-btn(@click='onClose') close
+          v-spacer
+          v-btn(@click='onSave' :disabled="!isValid") save
 
 </template>
 
@@ -100,7 +102,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .content {
   margin: 10px 50px !important;
 }

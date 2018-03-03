@@ -7,13 +7,6 @@ v-app(light='')
     v-model="snack.display"
   ) {{snack.text}}
   settings(:show="settings" v-on:hide="settings=false")
-  v-navigation-drawer(fixed="" v-model="queryRightDrawer" right="" clipped="" app="")
-      v-list(dense="")
-        v-list-tile()
-          v-list-tile-action
-            v-icon exit_to_app
-          v-list-tile-content
-            v-list-tile-title Open Temporary Drawer
   v-navigation-drawer(fixed='', :mini-variant='miniVariant', :clipped='clipped', v-model='drawer', app='')
     v-list.pt-0
       v-list-tile(value='true', v-for='(item, i) in items', :key='i', exact='', router :to='item.to')
@@ -21,7 +14,7 @@ v-app(light='')
           v-icon(light='', v-html='item.icon')
         v-list-tile-content
           v-list-tile-title(v-text='item.title')
-  v-toolbar(fixed='', app='', :clipped-left='clipped')
+  v-toolbar(fixed, app, :clipped-left='clipped' style="padding-right:0px;")
     v-toolbar-side-icon(@click.stop='drawer = !drawer', light='')
     v-btn(icon='', light='', @click.stop='miniVariant = !miniVariant')
       v-icon(v-html="miniVariant ? 'chevron_right' : 'chevron_left'")
@@ -35,9 +28,9 @@ v-app(light='')
     router-view
   v-footer(:fixed='fixed', app='')
     .hidden-xs
-      span Version:  
+      span Version:
       span {{v.major}}.{{v.minor}}.{{v.code}}
-      span &nbsp; Build date:  
+      span &nbsp; Build date:
       span {{version.date}}
     span
       | &nbsp; Copyright © {{year}} &nbsp;
@@ -56,6 +49,7 @@ v-app(light='')
         clipped: true,
         drawer: true,
         fixed: true,
+        inset: true,
         connections: [
           {
             name: 'Development'

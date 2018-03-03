@@ -2,6 +2,20 @@
 
 //- div(style="width:100%;")
 v-flex(xs12 mt-1)
+  v-navigation-drawer(mt-3 fixed v-model="queryRightDrawer" right="" clipped app style="z-index:0;")
+    v-list(dense="")
+      v-list-tile()
+        v-list-tile-action
+          v-icon exit_to_app
+        v-list-tile-content
+          v-list-tile-title Open Temporary Drawer
+    v-bottom-nav(absolute="" :value="true" :active.sync="e1" color="transparent", style="bottom:30px")
+      v-btn(flat="" color="teal" value="nearby")
+        v-icon cloud
+      v-btn(flat="" color="teal" value="recent")
+        v-icon history
+      v-btn(flat="" color="teal" value="favorites")
+        v-icon favorite
   codemirror(
     ref="cm",
     v-model="code",
@@ -15,7 +29,7 @@ v-flex(xs12 mt-1)
       v-icon(color="success") play_arrow
     v-btn(icon)
       v-icon(color="pink accent-1") favorite
-    v-btn(icon @click="toggleQueryRightDrawer")
+    v-btn(icon @click="queryRightDrawer = !queryRightDrawer")
       v-icon(v-if="queryRightDrawer") keyboard_arrow_right
       v-icon(v-else) keyboard_arrow_left
 
@@ -23,7 +37,6 @@ v-flex(xs12 mt-1)
 
 <script>
 
-import {mapGetters, mapActions} from 'vuex'
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/mode/sql/sql.js'
@@ -34,6 +47,8 @@ import 'codemirror/addon/hint/sql-hint.js'
 export default {
   data () {
     return {
+      e1: 'recent',
+      queryRightDrawer: false,
       drag: {
         ys: undefined, // y-start
         yc: undefined, // y-current
@@ -65,9 +80,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('ui', [
-      'queryRightDrawer'
-    ]),
     editor () {
       return this.$refs.cm.editor
     }
@@ -78,9 +90,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions('ui', [
-      'toggleQueryRightDrawer'
-    ]),
     onDrag (e) {
       this.drag.adjust(e.clientY)
     },

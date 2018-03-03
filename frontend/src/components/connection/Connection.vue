@@ -1,20 +1,22 @@
 <template lang="pug">
 
 div(
-  style="max-width: 700px; margin: auto;"
+  style="max-width: 700px; margin: auto; margin-top:20px;"
   class="lighten-3"
 )
-  v-form
-    v-text-field(label='Name', v-model='connection.name', :rules="[rules.required]")
-    v-text-field(label='Jdbc Url', v-model='connection.url', :rules="[rules.required]")
-    v-text-field(label='Username', v-model='connection.username',  :rules="[rules.required]")
-    v-text-field(label='Password', v-model='connection.password',  :rules="[rules.required]")
-    v-switch(label="Disabled" color="red darken-3" v-model="connection.disabled")
-    v-layout(row='')
-      v-btn(@click='onClose') close
-      v-spacer
-      v-btn(@click='onTest' :disabled="!isValid") test
-      v-btn(@click='onSave' :disabled="!isValid") save
+  v-card
+    v-card-text
+      v-form
+        v-text-field(label='Name', v-model='connection.name', :rules="[rules.required]")
+        v-text-field(label='Jdbc Url', v-model='connection.url', :rules="[rules.required]")
+        v-text-field(label='Username', v-model='connection.username',  :rules="[rules.required]")
+        v-text-field(label='Password', v-model='connection.password',  :rules="[rules.required]")
+        v-switch(label="Disabled" color="red darken-3" v-model="connection.disabled")
+        v-layout(row='')
+          v-btn(@click='onClose') close
+          v-spacer
+          v-btn(@click='onTest' :disabled="!isValid") test
+          v-btn(@click='onSave' :disabled="!isValid") save
 
 </template>
 
@@ -114,7 +116,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .content {
   margin: 10px 50px !important;
 }
