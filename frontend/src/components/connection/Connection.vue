@@ -11,6 +11,16 @@ div(
         v-text-field(label='Jdbc Url', v-model='connection.url', :rules="[rules.required]")
         v-text-field(label='Username', v-model='connection.username',  :rules="[rules.required]")
         v-text-field(label='Password', v-model='connection.password',  :rules="[rules.required]")
+        v-select(label="Labels" :items="labels" v-model="e11" item-text="name" item-value="name" multiple chips max-height="auto" autocomplete)
+          template(slot="selection" slot-scope="data")
+            v-chip.chip--select-multi(close @input="data.parent.selectItem(data.item)" :selected="data.selected" :key="JSON.stringify(data.item)")
+              | {{ data.item.name }}
+          template(slot="item" slot-scope="data")
+            template(v-if="typeof data.item !== 'object'")
+              v-list-tile-content(v-text="data.item")
+            template(v-else="")
+              v-list-tile-content
+                v-list-tile-title(v-html="data.item.name" @click="onLabelClick(data.item.labels)")
         v-switch(label="Disabled" color="red darken-3" v-model="connection.disabled")
         v-layout(row='')
           v-btn(@click='onClose') close
@@ -31,6 +41,14 @@ export default {
   props: ['id'],
   data () {
     return {
+      e11: [],
+      labels: [
+        { name: 'Development' },
+        { name: 'Test' },
+        { name: 'Production' },
+        { divider: true },
+        { name: 'Manage labels', labels: true }
+      ],
       rules: {
         required: (value) => !!value || ''
       },
@@ -54,6 +72,12 @@ export default {
     ...mapActions('notifications', [
       'snack', 'snackSuccess', 'snackError'
     ]),
+    onLabelClick (labels) {
+      if (!labels) {
+        return
+      }
+      this.$router.push('/labels')
+    },
     onSave () {
       if (this.connection.id === undefined) {
         this.create()

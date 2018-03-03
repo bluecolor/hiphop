@@ -48,4 +48,14 @@ class Connection {
   @BeanProperty
   var lastChecked: Date = _
 
+
+  @BeanProperty
+  @Fetch(value= FetchMode.JOIN)
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "connection_label",
+    joinColumns = Array(new JoinColumn(name = "connection_id", nullable = false, updatable = false)),
+    inverseJoinColumns = Array(new JoinColumn(name = "label_id",nullable = false, updatable = false))
+  )
+  var labels: java.util.List[Label] = new java.util.ArrayList[Label]
+
 }
