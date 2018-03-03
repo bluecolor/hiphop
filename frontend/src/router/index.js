@@ -9,6 +9,7 @@ import DeploymentOrders from '@/components/deployment/DeploymentOrders'
 import DeploymentOrderSteps from '@/components/deployment/DeploymentOrderSteps'
 import User from '@/components/user/User'
 import Users from '@/components/user/Users'
+import Query from '@/components/query/Query'
 
 Vue.use(Router)
 
@@ -31,6 +32,9 @@ export default new Router({
     }, {
       path: '/connection',
       component: Connection
+    }, {
+      path: '/query',
+      component: Query
     }, {
       path: '/connection/:id',
       props: true,

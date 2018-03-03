@@ -4,6 +4,7 @@ import state from './state'
 import actions from './actions'
 import mutations from './mutations'
 
+import ui from './modules/ui'
 import users from './modules/users'
 import connections from './modules/connections'
 import app from './modules/app'
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     loading: state => state.loading
   },
   modules: {
+    ui,
     users,
     connections,
     app,

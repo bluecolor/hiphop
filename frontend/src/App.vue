@@ -7,6 +7,13 @@ v-app(light='')
     v-model="snack.display"
   ) {{snack.text}}
   settings(:show="settings" v-on:hide="settings=false")
+  v-navigation-drawer(fixed="" v-model="queryRightDrawer" right="" clipped="" app="")
+      v-list(dense="")
+        v-list-tile()
+          v-list-tile-action
+            v-icon exit_to_app
+          v-list-tile-content
+            v-list-tile-title Open Temporary Drawer
   v-navigation-drawer(fixed='', :mini-variant='miniVariant', :clipped='clipped', v-model='drawer', app='')
     v-list.pt-0
       v-list-tile(value='true', v-for='(item, i) in items', :key='i', exact='', router :to='item.to')
@@ -69,6 +76,10 @@ v-app(light='')
           title: 'Deployments',
           to: '/deployments'
         }, {
+          icon: 'code',
+          title: 'Query',
+          to: '/query'
+        }, {
           icon: 'perm_identity',
           title: 'Users',
           to: '/users'
@@ -80,6 +91,9 @@ v-app(light='')
       }
     },
     computed: {
+      ...mapGetters('ui', [
+        'queryRightDrawer'
+      ]),
       ...mapGetters('notifications', [
         'snack'
       ]),
