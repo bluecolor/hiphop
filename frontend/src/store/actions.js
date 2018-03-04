@@ -4,5 +4,6 @@ export default {
     this.dispatch('connections/findAll')
     this.dispatch('users/findAll')
     this.dispatch('app/findVersion')
+    this.dispatch('labels/findAll')
   }
 }

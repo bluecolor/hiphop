@@ -9,6 +9,8 @@ object Status {
   val STOPPED = "STOPPED"
   val DONE    = "DONE"
   val WAITING = "WAITING"
+  val WARNING = "WARNING"
+  val FINISHED= "FINISHED"
 
   val valid = Map(
     WAITING -> List(WAITING,RUNNING,DONE,BLOCKED),

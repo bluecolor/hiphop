@@ -1,9 +1,4 @@
 <template lang="pug">
-div(
-  id="e3"
-  style="max-width: 900px; margin: auto;"
-  class="lighten-3"
-)
   div(
     id="e3"
     style="max-width: 600px; margin: auto;"
@@ -12,8 +7,8 @@ div(
     v-container(fluid='', style='min-height: 0;', grid-list-lg='')
       v-layout(row='', wrap='')
         v-flex(xs12='' v-for='(con, i) in connections',)
-          v-card
-            v-card-title(class="blue white--text")
+          v-card(dense)
+            v-card-title(dense class="blue white--text")
               .headline {{con.name}}
               v-spacer
               v-menu(bottom='', left='')
@@ -32,8 +27,8 @@ div(
               v-spacer
               v-btn(route :to="'/connection/' + con.id") Details
               v-btn(color="error", @click="onRemove(con.id)") Delete
-  v-btn(fixed='', dark='', fab='', bottom='', right='', color='pink' route, to="/connection")
-    v-icon add
+    v-btn(fixed='', dark='', fab='', bottom='', right='', color='pink' route, to="/connection")
+      v-icon add
 </template>
 
 <script>

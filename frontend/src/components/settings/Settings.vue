@@ -23,7 +23,7 @@
                 v-list-tile-content
                   v-list-tile-title Password
                   v-list-tile-sub-title Change your account's password
-          v-list(one-line="" subheader="")
+          v-list(one-line subheader)
             v-subheader User Controls
             v-card.elevation-5
               v-list-tile(avatar)

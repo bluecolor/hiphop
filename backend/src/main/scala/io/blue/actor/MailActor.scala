@@ -45,6 +45,4 @@ class MailActor extends Actor {
 
   def sendNewPasswordMail(user: User, password: String) =
     mailService.sendNewPasswordMail(user, password)
-
-
 }

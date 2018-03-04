@@ -1,28 +1,23 @@
 <template lang="pug">
 div(
   id="e3"
-  style="max-width: 900px; margin: auto;"
+  style="max-width: 600px; margin: auto;"
   class="lighten-3"
 )
-  div(
-    id="e3"
-    style="max-width: 600px; margin: auto;"
-    class="lighten-3"
-  )
-    v-container(fluid='', style='min-height: 0;', grid-list-lg='')
-      v-layout(row='', wrap='')
-        v-flex(xs12='' v-for='(u, i) in users',)
-          v-card
-            v-card-title(:class="cardTitleClass(u)")
-              .headline {{u.name}}
-            v-card-text
-              div
-                span
-                  | {{u.email}}
-            v-card-actions
-              v-btn(route :to="'/user/' + u.id") Details
-              v-spacer
-              v-btn(v-show="!u.system" color="error", @click="onRemove(u.id)") Delete
+  v-container(fluid='', style='min-height: 0;', grid-list-lg='')
+    v-layout(row='', wrap='')
+      v-flex(xs12='' v-for='(u, i) in users',)
+        v-card
+          v-card-title(:class="cardTitleClass(u)")
+            .headline {{u.name}}
+          v-card-text
+            div
+              span
+                | {{u.email}}
+          v-card-actions
+            v-btn(route :to="'/user/' + u.id") Details
+            v-spacer
+            v-btn(v-show="!u.system" color="error", @click="onRemove(u.id)") Delete
   v-btn(fixed='', dark='', fab='', bottom='', right='', color='pink' route, to="/user")
     v-icon add
 </template>

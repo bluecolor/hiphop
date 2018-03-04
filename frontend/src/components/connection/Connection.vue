@@ -11,14 +11,22 @@ div(
         v-text-field(label='Jdbc Url', v-model='connection.url', :rules="[rules.required]")
         v-text-field(label='Username', v-model='connection.username',  :rules="[rules.required]")
         v-text-field(label='Password', v-model='connection.password',  :rules="[rules.required]")
-        v-select(label="Labels" :items="labels" v-model="e11" item-text="name" item-value="name" multiple chips max-height="auto" autocomplete)
+        v-select(label="Labels" :items="labelMenu" v-model="e11" item-text="name" item-value="id" multiple chips max-height="auto" autocomplete)
           template(slot="selection" slot-scope="data")
-            v-chip.chip--select-multi(close @input="data.parent.selectItem(data.item)" :selected="data.selected" :key="JSON.stringify(data.item)")
+            v-chip.chip--select-multi(
+              text-color="white"
+              :style="`border-color:${data.item.color};background-color:${data.item.color};`"
+              close
+              @input="data.parent.selectItem(data.item)"
+              :selected="data.selected"
+              :key="JSON.stringify(data.item)"
+            )
               | {{ data.item.name }}
           template(slot="item" slot-scope="data")
             template(v-if="typeof data.item !== 'object'")
               v-list-tile-content(v-text="data.item")
             template(v-else="")
+              v-icon(v-if="!data.item.labels" left :style="'margin-right:10px; color:' + data.item.color") label
               v-list-tile-content
                 v-list-tile-title(v-html="data.item.name" @click="onLabelClick(data.item.labels)")
         v-switch(label="Disabled" color="red darken-3" v-model="connection.disabled")
@@ -42,13 +50,6 @@ export default {
   data () {
     return {
       e11: [],
-      labels: [
-        { name: 'Development' },
-        { name: 'Test' },
-        { name: 'Production' },
-        { divider: true },
-        { name: 'Manage labels', labels: true }
-      ],
       rules: {
         required: (value) => !!value || ''
       },
@@ -124,6 +125,9 @@ export default {
     ...mapGetters('connections', [
       'connections'
     ]),
+    ...mapGetters('labels', [
+      'labels'
+    ]),
     isValid () {
       return (
         this.connection.name &&
@@ -131,6 +135,13 @@ export default {
         this.connection.username &&
         this.connection.password
       )
+    },
+    labelMenu () {
+      let labels = _.cloneDeep(this.labels)
+      labels.push({divider: true})
+      labels.push({divider: true})
+      labels.push({name: 'Manage labels', labels: true})
+      return labels
     }
   },
   mounted () {

@@ -1,5 +1,5 @@
 
-import api from '../../api/app'
+import api from '../../api/labels'
 import _ from 'lodash'
 
 const LOAD = 'LOAD'
@@ -22,36 +22,38 @@ const actions = {
       commit(LOAD, response.data)
     })
   },
-  create ({commit}, payload) {
+  create ({commit, dispatch}, payload) {
     api.create(payload).then(response => {
       commit(CREATE, response.data)
-      this.fireEvent('notifications/snackSuccess', 'Created label')
+      dispatch('notifications/snackSuccess', 'Created label', {root: true})
+      window.history.back()
     },
     error => {
       console.log(error.response.data.message)
-      this.fireEvent('notifications/snackError', 'Failed to create label')
+      dispatch('notifications/snackError', 'Failed to create label', {root: true})
     })
   },
 
-  update ({commit}, payload) {
+  update ({commit, dispatch}, payload) {
     api.update(payload.id, payload).then(response => {
       commit(UPDATE, response.data)
-      this.fireEvent('notifications/snackSuccess', 'Updated label')
+      dispatch('notifications/snackSuccess', 'Updated label', {root: true})
+      window.history.back()
     },
     error => {
       console.log(error.response.data.message)
-      this.fireEvent('notifications/snackError', 'Failed to update label')
+      dispatch('notifications/snackError', 'Failed to update label', {root: true})
     })
   },
 
-  remove ({commit}, id) {
+  remove ({commit, dispatch}, id) {
     api.remove(id).then(response => {
       commit(REMOVE, id)
-      this.fireEvent('notifications/snackSuccess', 'Deleted label')
+      dispatch('notifications/snackSuccess', 'Deleted label', {root: true})
     },
     error => {
       console.log(error.response.data.message)
-      this.fireEvent('notifications/snackError', 'Failed to delete label')
+      dispatch('notifications/snackError', 'Failed to delete label', {root: true})
     })
   }
 }
@@ -63,16 +65,16 @@ const mutations = {
   },
   [UPDATE] (state, label) {
     const id = label.id
-    const i = _.findIndex(state.all, {id})
-    state.all.splice(i, 1)
-    state.all.push(label)
+    const i = _.findIndex(state.labels, {id})
+    state.labels.splice(i, 1)
+    state.labels.push(label)
   },
   [CREATE] (state, label) {
-    state.all.push(label)
+    state.labels.push(label)
   },
   [REMOVE] (state, id) {
-    const i = _.findIndex(state.all, {id})
-    state.all.splice(i, 1)
+    const i = _.findIndex(state.labels, {id})
+    state.labels.splice(i, 1)
   }
 }
 

@@ -4,19 +4,19 @@ import { API_BASE } from './constants'
 export default {
 
   findAll () {
-    return axios.get(`${API_BASE}/app/labels`)
+    return axios.get(`${API_BASE}/labels`)
   },
 
   create (label) {
-    return axios.post(`${API_BASE}/app/labels`, label)
+    return axios.post(`${API_BASE}/labels`, label)
   },
 
   update (id, label) {
-    return axios.put(`${API_BASE}/app/labels/${id}`, label)
+    return axios.put(`${API_BASE}/labels/${id}`, label)
   },
 
   remove (id) {
-    return axios.delete(`${API_BASE}/app/labels/${id}`)
+    return axios.delete(`${API_BASE}/labels/${id}`)
   }
 
 }

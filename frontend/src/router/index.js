@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
+import Labels from '@/components/label/Labels'
+import Label from '@/components/label/Label'
 import Connection from '@/components/connection/Connection'
 import Connections from '@/components/connection/Connections'
 import Deployment from '@/components/deployment/Deployment'
@@ -35,6 +37,16 @@ export default new Router({
     }, {
       path: '/query',
       component: Query
+    }, {
+      path: '/labels',
+      component: Labels
+    }, {
+      path: '/label',
+      component: Label
+    }, {
+      path: '/label/:id',
+      props: true,
+      component: Label
     }, {
       path: '/connection/:id',
       props: true,
