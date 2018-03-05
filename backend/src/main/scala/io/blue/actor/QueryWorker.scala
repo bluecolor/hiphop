@@ -46,8 +46,7 @@ class QueryWorker extends Actor {
   }
 
   def onQueryOrder(order: QueryOrder) = {
-    val queryResult = queryService.query(order.query, order.connection)
-    sender ! queryResult
+    sender ! queryService.query(order.query, order.connection)
     self ! PoisonPill
   }
 

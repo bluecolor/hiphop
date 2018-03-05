@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 
 import io.blue.repository.ConnectionRepository
 import io.blue.model._
-import io.blue.connector._
+import io.blue.connector.Connector
 
 import io.blue.exception._
 
@@ -39,11 +39,11 @@ class ConnectionService @Autowired()(val connectionRepository: ConnectionReposit
   def test(connection: Connection): Connection = {
     var result: Boolean = true
     try {
-      val con = new JdbcConnector(connection)
-      result = con.test
+      val connector = new Connector(connection)
+      result = connector.test
     }catch {
         case e: Exception =>
-          updateStatus(connection.id,-1)
+          updateStatus(connection.id, -1)
           throw e
     }
     updateStatus(connection.id, if(result) 1 else -1)
