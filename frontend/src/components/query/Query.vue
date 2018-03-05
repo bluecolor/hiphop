@@ -1,11 +1,11 @@
 <template lang="pug">
 
 //- div(style="width:100%;")
-v-flex(xs12 mt-1)
+div.query(xs12 mt-1 style="height:100%")
   v-navigation-drawer(mt-3 fixed v-model="queryRightDrawer" right="" clipped app style="z-index:0;")
     v-list(v-show="e1==='connections'" dense="")
       v-list-tile-content.top-filters
-        v-text-field(clearable append-icon="search" style="padding:10px 10px 0px 10px;" )
+        v-text-field(clearable v-model="connectionFilter.search" append-icon="search" style="padding:10px 10px 0px 10px;" )
         v-select(
           clearable
           style="padding:0px 10px 0px 10px;"
@@ -15,7 +15,8 @@ v-flex(xs12 mt-1)
           multiple
           chips
           max-height="auto"
-          autocomplete
+          autocomplete,
+          v-model="connectionFilter.labels"
         )
           template(slot="selection" slot-scope="data")
             v-chip.chip--select-multi(
@@ -39,13 +40,13 @@ v-flex(xs12 mt-1)
         v-list-tile-content
           v-list-tile-title Connections
         v-list-tile-action
-          v-checkbox(color="green darken-3" v-model="selectAllConnections")
+          v-checkbox(color="green darken-3" v-model="connectionFilter.selectAll")
       v-divider
-      v-list-tile(v-for="(c,i) in connections" @click="" ripple)
+      v-list-tile(v-for="(c,i) in cons" @click="" ripple)
         v-list-tile-content
           v-list-tile-title {{c.name}}
         v-list-tile-action
-          v-checkbox(color="success" v-model="sc[i]")
+          v-checkbox(color="success" v-model="connectionFilter.selected[i]")
 
     v-bottom-nav(absolute="" :value="true" :active.sync="e1" color="transparent", style="bottom:30px")
       v-btn(flat="" color="teal" value="connections")
@@ -59,7 +60,7 @@ v-flex(xs12 mt-1)
     v-model="code",
     :options="cmOptions"
   )
-  v-divider#id-1.drag-handle(@drag="onDrag" @dragstart="onDragStart" @active="onActive")
+  div#id-1.drag-handle(@drag="onDrag" @dragstart="onDragStart" @active="onActive")
   v-progress-linear(
     v-show="running"
     :indeterminate="true"
@@ -68,11 +69,15 @@ v-flex(xs12 mt-1)
     style="margin:0;"
     background-color="white"
   )
-  v-toolbar(dense draggable="false")
-    v-btn(icon @click="console ='grid'")
+  v-toolbar(dense draggable="false" style="z-index:1")
+    v-btn(icon @click="console.content ='grid'")
       v-icon(color="light-blue darken-3" :style="'opacity:' + opacity('grid')") grid_on
-    v-btn(icon @click="console ='logs'")
+    v-btn(icon @click="console.content ='logs'")
       v-icon(color="brown darken-1" :style="'opacity:' + opacity('logs')") bug_report
+    v-btn(v-if="console.minified" icon @click="console.minified = false")
+      v-icon keyboard_arrow_up
+    v-btn(v-else icon @click="console.minified = true")
+      v-icon keyboard_arrow_down
     v-spacer
     v-btn(icon @click="onPlay" draggable="false")
       v-icon(color="success") play_arrow
@@ -81,6 +86,9 @@ v-flex(xs12 mt-1)
     v-btn(icon @click="queryRightDrawer = !queryRightDrawer")
       v-icon(v-if="queryRightDrawer") keyboard_arrow_right
       v-icon(v-else) keyboard_arrow_left
+  div.console
+    div.welcome
+      v-icon(style="margin:auto;") filter_vintage
 
 </template>
 
@@ -100,9 +108,16 @@ export default {
     return {
       progressColor: 'primary',
       running: false,
-      console: 'grid',
-      selectAllConnections: undefined,
-      sc: [],
+      console: {
+        minified: false,
+        content: 'grid'
+      },
+      connectionFilter: {
+        selectAll: undefined,
+        search: undefined,
+        labels: [],
+        selected: []
+      },
       e1: 'connections',
       queryRightDrawer: false,
       drag: {
@@ -143,6 +158,18 @@ export default {
     ]),
     editor () {
       return this.$refs.cm.codemirror
+    },
+    cons () {
+      const f = this.connectionFilter
+      return _.filter(this.connections, connection => {
+        if (!_.isEmpty(f.search) && connection.name.toLowerCase().indexOf(f.search.toLowerCase()) === -1) {
+          return false
+        }
+        if (!_.isEmpty(f.labels) && _.chain(connection.labels).map('id').intersection(f.labels).isEmpty().value()) {
+          return false
+        }
+        return true
+      })
     }
   },
   watch: {
@@ -154,7 +181,7 @@ export default {
       e.preventDefault()
     },
     opacity (item) {
-      return this.console === item ? 1 : 0.4
+      return this.console.content === item ? 1 : 0.4
     },
     onDrag (e) {
       this.drag.adjust(e.clientY)
@@ -189,16 +216,39 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .drag-handle {
   cursor: ns-resize;
   height: 2px;
   background-color: transparent;
 }
 
-/* .top-filters input {
-  padding-left: 10px;
-} */
+body {
+  overflow-y: hidden !important;
+}
+
+.console {
+  /* position: absolute; */
+  height: 100%;
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.query {
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  margin-top: 2px;
+  flex-grow: 1;
+  display: flex;
+}
+
+.welcome {
+  display: flex;
+  flex-grow: 1;
+}
 
 </style>
 

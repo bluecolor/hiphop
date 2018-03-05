@@ -1,7 +1,7 @@
 <template lang="pug">
 
 div(
-  style="max-width: 700px; margin: auto; margin-top:20px;"
+  style="max-width: 700px; margin: auto; margin-top:20px; width:100%"
   class="lighten-3"
 )
   v-card
@@ -10,8 +10,8 @@ div(
         v-text-field(label='Name', v-model='connection.name', :rules="[rules.required]")
         v-text-field(label='Jdbc Url', v-model='connection.url', :rules="[rules.required]")
         v-text-field(label='Username', v-model='connection.username',  :rules="[rules.required]")
-        v-text-field(label='Password', v-model='connection.password',  :rules="[rules.required]")
-        v-select(label="Labels" :items="labelMenu" v-model="e11" item-text="name" item-value="id" multiple chips max-height="auto" autocomplete)
+        v-text-field(label='Password', type="password" v-model='connection.password',  :rules="[rules.required]")
+        v-select(label="Labels" :items="labelMenu" v-model="connection.labels" item-text="name" item-value="id" multiple chips max-height="auto" autocomplete)
           template(slot="selection" slot-scope="data")
             v-chip.chip--select-multi(
               text-color="white"
@@ -49,7 +49,6 @@ export default {
   props: ['id'],
   data () {
     return {
-      e11: [],
       rules: {
         required: (value) => !!value || ''
       },
@@ -60,7 +59,8 @@ export default {
         username: '',
         password: '',
         status: 0,
-        lastChecked: undefined
+        lastChecked: undefined,
+        labels: []
       }
     }
   },

@@ -79,7 +79,7 @@ const actions = {
     }
     return new Promise((resolve, reject) => {
       return api[test](payload).then(response => {
-        resolve(response)
+        resolve(response.data)
       },
       error => {
         console.log(error.response.data.message)
@@ -92,7 +92,7 @@ const actions = {
 // mutations
 const mutations = {
   [LOAD] (state, records) {
-    state.all = _.orderBy(records, ['name'], ['asc'])
+    state.all = _.orderBy(records, r => r.name.toLowerCase(), ['asc'])
   },
   [SAVE] (state, record) {
     const c = _.find(state.all, {id: record.id})
@@ -100,6 +100,7 @@ const mutations = {
       _.remove(state.all, r => r.id === record.id)
     }
     state.all.push(record)
+    state.all = _.orderBy(state.all, r => r.name.toLowerCase(), ['asc'])
     window.history.back()
   },
   [REMOVE] (state, id) {
@@ -108,12 +109,14 @@ const mutations = {
   },
   [CREATE] (state, data) {
     state.all.push(data)
+    state.all = _.orderBy(state.all, r => r.name.toLowerCase(), ['asc'])
   },
   [UPDATE] (state, data) {
     const id = data.id
     const i = _.findIndex(state.all, {id})
     state.all.splice(i, 1)
     state.all.push(data)
+    state.all = _.orderBy(state.all, r => r.name.toLowerCase(), ['asc'])
   }
 }
 

@@ -1,12 +1,12 @@
 <template lang="pug">
 div(
   id="e3"
-  style="max-width: 900px; margin: auto;"
+  style="max-width: 900px; margin: auto; width:100%; margin-top:10px;"
   class="lighten-3"
+  margin-top="10px;"
 )
   div(
     id="e3"
-    style="margin: auto;"
     class="lighten-3"
   )
     v-container(fluid='', style='min-height: 0;', grid-list-lg='')

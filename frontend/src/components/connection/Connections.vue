@@ -1,34 +1,35 @@
 <template lang="pug">
-  div(
-    id="e3"
-    style="max-width: 600px; margin: auto;"
-    class="lighten-3"
-  )
-    v-container(fluid='', style='min-height: 0;', grid-list-lg='')
-      v-layout(row='', wrap='')
-        v-flex(xs12='' v-for='(con, i) in connections',)
-          v-card(dense)
-            v-card-title(dense class="blue white--text")
-              .headline {{con.name}}
-              v-spacer
-              v-menu(bottom='', left='')
-                v-btn(icon='', slot='activator', dark='')
-                  v-icon more_vert
-                v-list
-                  v-list-tile(v-for='item in menu', :key='item.title', @click='onMenuItemClick(item.id, con.id)')
-                    v-list-tile-title {{ item.title }}
-            v-card-text
-              div
-                span(:id="'url-'+con.id")
-                  | {{con.url}}
-            v-card-actions
-              v-btn(@click="onTest(con.id)") Test
-              v-progress-circular(v-show="testing === con.id" indeterminate color="primary")
-              v-spacer
-              v-btn(route :to="'/connection/' + con.id") Details
-              v-btn(color="error", @click="onRemove(con.id)") Delete
-    v-btn(fixed='', dark='', fab='', bottom='', right='', color='pink' route, to="/connection")
-      v-icon add
+  div.connections
+    div(
+      id="e3"
+      style="max-width: 600px; margin: auto;"
+      class="lighten-3"
+    )
+      v-container(fluid='', style='min-height: 0;', grid-list-lg='')
+        v-layout(row='', wrap='')
+          v-flex(xs12='' v-for='(con, i) in connections',)
+            v-card(dense)
+              v-card-title(dense class="blue white--text")
+                .headline {{con.name}}
+                v-spacer
+                v-menu(bottom='', left='')
+                  v-btn(icon='', slot='activator', dark='')
+                    v-icon more_vert
+                  v-list
+                    v-list-tile(v-for='item in menu', :key='item.title', @click='onMenuItemClick(item.id, con.id)')
+                      v-list-tile-title {{ item.title }}
+              v-card-text
+                div
+                  span(:id="'url-'+con.id")
+                    | {{con.url}}
+              v-card-actions
+                v-btn(@click="onTest(con.id)") Test
+                v-progress-circular(v-show="testing === con.id" indeterminate color="primary")
+                v-spacer
+                v-btn(route :to="'/connection/' + con.id") Details
+                v-btn(color="error", @click="onRemove(con.id)") Delete
+      v-btn(fixed='', dark='', fab='', bottom='', right='', color='pink' route, to="/connection")
+        v-icon add
 </template>
 
 <script>
@@ -115,11 +116,19 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .hidden {
     display: none;
   }
   .url {
     font-size: 14px !important;
   }
+
+  .connections {
+    /* height: 100%; */
+    display: flex;
+    overflow-y: auto;
+    width: 100%;
+  }
+
 </style>

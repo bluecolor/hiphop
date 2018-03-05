@@ -27,9 +27,11 @@ body {
   overflow-y: auto;
   font-size: 14px;
   line-height: 1.42857143;
+  overflow-y: hidden !important;
 }
 
 html {
+  overflow-y: hidden !important;
   font-size: 10px;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   font-family: sans-serif;
@@ -214,9 +216,9 @@ html {
 
 
 
-.checkbox input[type=checkbox], 
-.checkbox-inline input[type=checkbox], 
-.radio input[type=radio], 
+.checkbox input[type=checkbox],
+.checkbox-inline input[type=checkbox],
+.radio input[type=radio],
 .radio-inline input[type=radio] {
   margin-left: -18px !important;
 }
@@ -246,17 +248,17 @@ td .checkbox label, .radio label {
 
 .task-search {
   float : right !important;
-  width : 60%   !important; 
+  width : 60%   !important;
 }
 
-.task-search .input-group-btn:first-child>.btn, 
+.task-search .input-group-btn:first-child>.btn,
 .task-search  .input-group-btn:first-child>.btn-group {
     margin-right: -1px !important;
 }
 
 .star-item>i:hover{
-  color: $yellow ;  
-} 
+  color: $yellow ;
+}
 
 .zero-item {
   margin: 100px auto;
@@ -284,8 +286,8 @@ td .checkbox label, .radio label {
 }
 
 .bookmark-item>i:hover{
-  color: $yellow ;  
-} 
+  color: $yellow ;
+}
 
 div.dataTables_wrapper{
   margin-right: 10px;

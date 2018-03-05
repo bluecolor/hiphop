@@ -1,5 +1,5 @@
 <template lang="pug">
-v-container(grid-list-md text-xs-center)
+v-container(grid-list-md text-xs-center style="margin-top:10px;")
   v-layout(row='' wrap='' mt-3='')
     v-flex(xs4='' pa-3)
       v-card(:class="c1" v-on:mouseover="onMouseOver(1)" v-on:mouseout="onMouseOut(1)")

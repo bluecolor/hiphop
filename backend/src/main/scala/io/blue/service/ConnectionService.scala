@@ -59,6 +59,7 @@ class ConnectionService @Autowired()(val connectionRepository: ConnectionReposit
     con.url = connection.url
     con.username= connection.username
     con.password= connection.password //todo encrypt
+    con.labels = connection.labels
     connectionRepository.save(con)
   }
 

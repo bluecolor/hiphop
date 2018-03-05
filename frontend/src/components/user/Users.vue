@@ -1,7 +1,7 @@
 <template lang="pug">
 div(
   id="e3"
-  style="max-width: 600px; margin: auto;"
+  style="max-width: 600px; margin: auto; width:100%; margin-top:10px; overflow-y:auto;"
   class="lighten-3"
 )
   v-container(fluid='', style='min-height: 0;', grid-list-lg='')

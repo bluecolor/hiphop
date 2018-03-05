@@ -127,4 +127,54 @@ v-app(light='')
 
 
 <style>
+body {
+  height: 100%;
+  overflow-y: hidden !important;
+}
+
+html {
+  overflow-y: hidden !important;
+  height: 100%;
+}
+.application--wrap {
+  min-height:auto;
+}
+
+.application {
+  height: calc(100% - 37px);
+}
+main.content {
+  padding-bottom: 0px !important;
+  flex: unset;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* display: -webkit-box;
+  display: -ms-flexbox; */
+  /* display: flex; */
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 100%;
+  position: relative;
+  min-height: unset;
+}
+
+.content--wrap {
+    display: flex;
+    margin: auto;
+    /* overflow-y: auto; */
+    width: 100%;
+    flex-direction: column;
+}
+
+/* .content--wrap {
+  height: 690px;
+  overflow-y: auto;
+} */
+
 </style>
