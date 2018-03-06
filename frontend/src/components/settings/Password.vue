@@ -42,10 +42,12 @@
             )
         v-card-actions
           v-spacer
-          v-btn(flat) Save
+          v-btn(flat @click="onSave") Save
 </template>
 
 <script>
+import {mapActions} from 'vuex'
+
 export default {
   data () {
     return {
@@ -61,8 +63,18 @@ export default {
     }
   },
   methods: {
+    ...mapActions('users', [
+      'changePassword'
+    ]),
     onBack () {
       this.$emit('close')
+    },
+    onSave () {
+      const payload = {
+        currentPassword: this.p.current,
+        newPassword: this.p.new
+      }
+      this.changePassword(payload)
     }
   }
 }

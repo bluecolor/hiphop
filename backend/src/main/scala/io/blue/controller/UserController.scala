@@ -43,7 +43,6 @@ class UserController  @Autowired()(private val userService: UserService) {
   def update(@PathVariable("id") id: Long, @RequestBody user: User) =
     userService.update(user)
 
-
   @RequestMapping(value = Array("/profile"), method = Array(RequestMethod.PUT))
   def updateProfile(@RequestBody user: User) =
     userService.updateProfile(user)
@@ -53,11 +52,9 @@ class UserController  @Autowired()(private val userService: UserService) {
   def updateOptions(@RequestBody options: String) =
     userService.updateOptions(options)
 
-
   @RequestMapping(value = Array("/password"), method = Array(RequestMethod.PUT))
   def changePassword(@RequestBody pass: Map[String,String]) =
     userService.changePassword(pass.get("currentPassword").get,pass.get("newPassword").get)
-
 
   @RequestMapping(value = Array("/{id}"), method = Array(RequestMethod.DELETE))
   @Secured(Array("ROLE_MASTER"))

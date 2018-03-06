@@ -13,5 +13,8 @@ export default {
   },
   remove (id) {
     return axios.delete(`${API_BASE}/users/${id}`)
+  },
+  changePassword (payload) {
+    return axios.put(`${API_BASE}/users/password`, payload)
   }
 }

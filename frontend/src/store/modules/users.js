@@ -57,6 +57,16 @@ const actions = {
         reject(error.response.data.message)
       })
     })
+  },
+  changePassword ({commit, dispatch}, payload) {
+    return api.changePassword(payload).then(response => {
+      dispatch('notifications/snackSuccess', 'Changed password', {root: true})
+      window.history.back()
+    },
+    error => {
+      console.log(error.response.data.message)
+      dispatch('notifications/snackError', 'Failed to update password', {root: true})
+    })
   }
 }
 
