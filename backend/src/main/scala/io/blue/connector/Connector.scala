@@ -4,7 +4,7 @@ import scala.beans.BeanProperty
 import io.blue.exception._
 import java.sql.Connection
 import java.sql.DriverManager
-
+import io.blue.model.query._
 
 class Connector(private val c: io.blue.model.Connection) {
 
@@ -33,16 +33,17 @@ class Connector(private val c: io.blue.model.Connection) {
     val stmt = connection.createStatement
     val rs = stmt.executeQuery(query)
     val md = rs.getMetaData
-    (1 to md.getColumnCount).map(md.getColumnName(_)).toList
+    Column.columns(md)
   }
 
-  def data(query: String, columns: List[String]) = {
+  def data(query: String, columns: List[Column]) = {
     connect
     val stmt = connection.createStatement
     val rs = stmt.executeQuery(query)
     var d = List[List[String]]()
+    val c = columns.zipWithIndex
     while(rs.next && d.length < DATA_LIMIT) {
-      d ::= columns.map(rs.getString(_))
+      d ::= c.map{case (_, index) => rs.getString(index+1)}
     }
     connection.close
     d

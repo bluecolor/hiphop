@@ -17,6 +17,10 @@ import org.springframework.web.multipart.MultipartFile
 class QueryController  @Autowired()(private val queryService: QueryService) {
 
   @Secured(Array("ROLE_OPERATOR","ROLE_MASTER"))
+  @RequestMapping(method = Array(RequestMethod.GET))
+  def findAll= queryService.findAll
+
+  @Secured(Array("ROLE_OPERATOR","ROLE_MASTER"))
   @RequestMapping(method = Array(RequestMethod.POST))
   def query (@RequestBody queryRequest: QueryRequest) =
     queryService.query(queryRequest)

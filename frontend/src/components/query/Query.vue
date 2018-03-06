@@ -88,7 +88,9 @@ div.query(xs12 mt-1 style="height:100%")
       v-icon(v-else) keyboard_arrow_left
   div.console
     div.welcome
-      v-icon(style="margin:auto;") filter_vintage
+      div.welcome-message
+        v-icon(x-large color="grey lighten-1") filter_vintage
+        h Welcome to query editor
 
 </template>
 
@@ -248,6 +250,18 @@ body {
 .welcome {
   display: flex;
   flex-grow: 1;
+}
+
+.welcome-message {
+  margin: auto;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-message > h {
+  font-size: 20px;
+  color: silver;
 }
 
 </style>

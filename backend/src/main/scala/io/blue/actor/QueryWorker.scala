@@ -42,11 +42,11 @@ class QueryWorker extends Actor {
 
   def receive = {
     case order: QueryOrder => onQueryOrder(order)
-    case _ => println("Opps ?")
+    case _ => log.debug("Opps ?")
   }
 
   def onQueryOrder(order: QueryOrder) = {
-    sender ! queryService.query(order.query, order.connection)
+    sender ! queryService.query(order.queryId, order.query, order.connection)
     self ! PoisonPill
   }
 

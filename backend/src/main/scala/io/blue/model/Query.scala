@@ -27,6 +27,7 @@ class Query {
   var id: Long = _
 
   @BeanProperty
+  @NotNull
   var query: String = _
 
   @BeanProperty
