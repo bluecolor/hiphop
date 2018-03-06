@@ -46,7 +46,7 @@ div.query(xs12 mt-1 style="height:100%")
         v-list-tile-content
           v-list-tile-title {{c.name}}
         v-list-tile-action
-          v-checkbox(color="success" v-model="connectionFilter.selected[i]")
+          v-checkbox(color="success" v-model="connectionFilter.selected[c.id]")
 
     v-bottom-nav(absolute="" :value="true" :active.sync="e1" color="transparent", style="bottom:30px")
       v-btn(flat="" color="teal" value="connections")
@@ -118,7 +118,7 @@ export default {
         selectAll: undefined,
         search: undefined,
         labels: [],
-        selected: []
+        selected: {}
       },
       e1: 'connections',
       queryRightDrawer: false,
@@ -176,6 +176,9 @@ export default {
   },
   watch: {
     code () {
+    },
+    'connectionFilter.selectAll' (v) {
+      _.each(this.connections, c => { this.connectionFilter.selected[c.id] = v })
     }
   },
   methods: {
