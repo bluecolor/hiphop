@@ -9,10 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.core.context.SecurityContextHolder
+import com.fasterxml.jackson.databind.ObjectMapper
 
 import io.blue.AppInit
 import io.blue.repository.UserRepository
-import io.blue.model.User
+import io.blue.model._
 import io.blue.exception._
 import io.blue.actor.message.{SendUserPasswordMail,SendNewPasswordMail}
 import org.apache.commons.lang3.RandomStringUtils
@@ -32,18 +33,18 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
 
 
 	override def loadUserByUsername(username: String): UserDetails = {
-		
+
     val user = userRepository.findByUsername(username);
     val auth = AuthorityUtils.createAuthorityList( s"ROLE_${user.role}" )
-    
+
 		new org.springframework.security.core.userdetails.User(
-      user.username, 
+      user.username,
       user.password,
 			auth)
 	}
 
   def search(exp: String) = userRepository.search(exp)
-  
+
   def findSystemUser = userRepository.findBySystemTrue
 
   def findAll = userRepository.findAll
@@ -55,9 +56,9 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
     .getContext()
     .getAuthentication()
     .getPrincipal().asInstanceOf[org.springframework.security.core.userdetails.User].getUsername()
-    
+
     userRepository.findByUsername(username)
-  } 
+  }
 
   def findByNameContainingIgnoreCase(name:String) =
     userRepository.findByNameContainingIgnoreCase(name)
@@ -66,15 +67,16 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
   def count = userRepository.count
 
   def findByUsername(username: String) = userRepository.findByUsername(username)
-  
+
 
   def create(user: User, system: Boolean = false) = {
     val password = if(!system) RandomStringUtils.random(8,true,true) else user.password
-    
+
+    user.options = (new ObjectMapper).writeValueAsString(new UserOptions)
     user.password = new BCryptPasswordEncoder().encode(password)
     val u = userRepository.save(user)
     sendMail(SendUserPasswordMail(u, password))
-    log.debug(s"User '${user.username}' created.")    
+    log.debug(s"User '${user.username}' created.")
     u
   }
 
@@ -87,7 +89,7 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
     var u = userRepository.findOne(user.id)
     u.name = if(user.name != null) user.name else u.name
     u.username = user.username
-    u.role = user.role 
+    u.role = user.role
     u.locked = user.locked
     u.email = if(user.email != null) user.email else u.email
     userRepository.save(u)
@@ -120,9 +122,7 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
     if(newp == null || newp.isEmpty){
       throw new RuntimeException("Password can not be empty!")
     }
-
-    val encoder = new BCryptPasswordEncoder 
-    
+    val encoder = new BCryptPasswordEncoder
     if(!encoder.matches(oldp, me.password)){
       throw new RuntimeException("Wrong old password!")
     }
@@ -141,7 +141,7 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
   }
 
   /*!
-    this can only be accessed from the shell 
+    this can only be accessed from the shell
   */
   def deleteSystemUser(id: Long): User = {
     val user = userRepository.findOne(id);
@@ -171,6 +171,33 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
     val u = userRepository.save(user)
     sendMail(SendNewPasswordMail(u, password))
     u
+  }
+
+  def setOption(option: Map[String, String]) = {
+    val name = option get "name" match {
+      case Some(n: String) => n
+      case _ =>
+    }
+    val value = option get "value" match {
+      case Some(v: String) => v
+      case _ =>
+    }
+    var me = findMe
+    var options = if(me.options != null) {
+      (new ObjectMapper).readValue(me.options, classOf[UserOptions])
+    } else {
+      new UserOptions
+    }
+
+    name match {
+      case "footer" => options.footer = value == "true"
+      case "deno" => options.deno = value == "true"
+      case "miniVariant" => options.miniVariant = value == "true"
+      case "sound" => options.sound = value == "true"
+      case _ =>
+    }
+    me.options = (new ObjectMapper).writeValueAsString(options)
+    userRepository.save(me)
   }
 
 }

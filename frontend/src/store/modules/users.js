@@ -6,13 +6,16 @@ const LOAD = 'LOAD'
 const CREATE = 'CREATE'
 const UPDATE = 'UPDATE'
 const REMOVE = 'REMOVE'
+const SET_ME = 'SET_ME'
 
 const state = {
-  all: []
+  all: [],
+  me: undefined
 }
 
 const getters = {
-  users: state => state.all
+  users: state => state.all,
+  me: state => state.me
 }
 
 // actions
@@ -67,6 +70,24 @@ const actions = {
       console.log(error.response.data.message)
       dispatch('notifications/snackError', 'Failed to update password', {root: true})
     })
+  },
+  setOption ({commit, dispatch}, payload) {
+    return api.setOption(payload).then(response => {
+      commit(SET_ME, response.data)
+    },
+    error => {
+      console.log(error.response.data.message)
+      dispatch('notifications/snackError', 'Failed to save option', {root: true})
+    })
+  },
+  findMe ({commit, dispatch}) {
+    return api.findMe().then(response => {
+      commit(SET_ME, response.data)
+    },
+    error => {
+      console.log(error.response.data.message)
+      dispatch('notifications/snackError', 'Failed to get user info', {root: true})
+    })
   }
 }
 
@@ -87,6 +108,9 @@ const mutations = {
   [REMOVE] (state, id) {
     const i = _.findIndex(state.all, {id})
     state.all.splice(i, 1)
+  },
+  [SET_ME] (state, payload) {
+    state.me = payload
   }
 }
 

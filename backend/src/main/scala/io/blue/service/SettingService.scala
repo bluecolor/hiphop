@@ -32,8 +32,8 @@ class SettingService @Autowired()(val settingRepository: SettingRepository){
   @(Autowired @setter)
   private var userService: UserService = _
 
-  def findByName(name: String) = settingRepository.findByNameIgnoreCase(name)  
-  
+  def findByName(name: String) = settingRepository.findByNameIgnoreCase(name)
+
   def findAll = settingRepository.findAll
 
   def findOne(id: Long) = settingRepository.findOne(id)
@@ -42,9 +42,8 @@ class SettingService @Autowired()(val settingRepository: SettingRepository){
   def create(setting: Setting) = {
     setting.name = setting.name.trim
     val s = findByName(setting.name)
-    if(s != null && !s.isEmpty)
+    if(s != null)
       throw new SettingAlreadyExistException(s"""Setting "${setting.name}" already exists!""")
-    
     settingRepository.save(setting)
   }
 
@@ -61,51 +60,45 @@ class SettingService @Autowired()(val settingRepository: SettingRepository){
     s
   }
 
-  // @Deprecated
-  // use findSettingsByName
-  def findMailSettings : Option[MailSetting] = {
-    val setting = settingRepository.findByNameIgnoreCase("mail")
-    if(!setting.isEmpty) {
-      val mapper = new ObjectMapper
-      val m = mapper.readValue(setting(0).value, classOf[MailSetting]);
-      return Some(m)
-    }
-    return None
-  }
-
-  // @Deprecated
-  // use findSettingsByName
-  def findSlackSettings: Option[Slack] = {
-    val setting = settingRepository.findByNameIgnoreCase("slack")
-    if(!setting.isEmpty) {
-      val mapper = new ObjectMapper
-      val m = mapper.readValue(setting(0).value, classOf[Slack]);
-      return Some(m)
-    }
-    return None
+  def save(setting: Setting) = {
+    var o = findByName(setting.name)
+    var s = if(o != null) o else new Setting
+    s.user = userService.findMe
+    s.value = setting.value
+    settingRepository.save(setting)
   }
 
   def findSettingsByName[T](c: T, name: String)(implicit tag: ClassTag[T]): Option[T] = {
-    val setting = settingRepository.findByNameIgnoreCase(name)
-    if(!setting.isEmpty) {
-      val mapper = new ObjectMapper
-      val m = mapper.readValue(setting(0).value, tag.runtimeClass);
-      return Some(m.asInstanceOf[T])
+    val setting = findByName(name)
+    if(setting != null) {
+      val m = (new ObjectMapper).readValue(setting.value, tag.runtimeClass)
+      Some(m.asInstanceOf[T])
+    } else {
+      None
     }
-    return None
-  } 
+  }
+
+  // @Deprecated
+  // use findSettingsByName
+  def findMailSettings : Option[MailSetting] = {
+    val setting = findByName("mail")
+    if(setting != null) {
+      val m = (new ObjectMapper).readValue(setting.value, classOf[MailSetting]);
+      Some(m)
+    } else {
+      None
+    }
+  }
 
 
 
   def activeMailService: Boolean = {
     val s = settingRepository.findByNameIgnoreCase("mail")
-    if(!s.isEmpty) {
-      val mapper = new ObjectMapper
-      val m = mapper.readValue(s(0).value, classOf[MailSetting])
-      return m.active.toLowerCase == "yes"
-    }else{
-      return false
-    }  
+    if(s == null) {
+      (new ObjectMapper).readValue(s.value, classOf[MailSetting]).active
+    } else {
+      false
+    }
   }
 
 

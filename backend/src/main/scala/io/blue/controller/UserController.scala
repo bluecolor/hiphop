@@ -21,7 +21,6 @@ class UserController  @Autowired()(private val userService: UserService) {
   @RequestMapping(value = Array("/me"), method = Array(RequestMethod.GET) )
   def findMe = userService.findMe
 
-
   @RequestMapping(value = Array("/count"), method = Array(RequestMethod.GET) )
   def count = userService.count
 
@@ -47,8 +46,7 @@ class UserController  @Autowired()(private val userService: UserService) {
   def updateProfile(@RequestBody user: User) =
     userService.updateProfile(user)
 
-
-  @RequestMapping(value = Array("/options"), method = Array(RequestMethod.PUT))
+  @RequestMapping(value = Array("/options-all"), method = Array(RequestMethod.PUT))
   def updateOptions(@RequestBody options: String) =
     userService.updateOptions(options)
 
@@ -62,5 +60,8 @@ class UserController  @Autowired()(private val userService: UserService) {
 
   @RequestMapping(value = Array("/forgot-password"), method = Array(RequestMethod.POST))
   def forgotPassword(@RequestBody str: String) = userService.forgotPassword(str)
+
+  @RequestMapping(value = Array("/options"), method = Array(RequestMethod.PUT))
+  def setOption(@RequestBody option: Map[String,String]) = userService.setOption(option)
 
 }

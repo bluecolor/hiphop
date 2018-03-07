@@ -1,9 +1,13 @@
 {
+  "compilerOptions": {
+    "target": "ES6"
+  },
   "typeAcquisition": {
     "include": [
-        "lodash",
-        "axios",
-        "moment"
+      "lodash",
+      "axios",
+      "moment",
+      "src/**/*"
     ]
   }
 }

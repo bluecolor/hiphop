@@ -9,6 +9,11 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import scala.beans.BeanProperty
 
+/*
+  MAIL
+  SLACK
+*/
+
 @Entity(name="settings")
 class Setting {
 
@@ -26,7 +31,7 @@ class Setting {
   @NotNull
   @Column(unique = true)
   var name: String = _
-  
+
   @BeanProperty
   @NotNull
   @Column(columnDefinition = "varchar(max)")

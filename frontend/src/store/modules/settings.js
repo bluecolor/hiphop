@@ -1,19 +1,18 @@
-import store from '../'
 import api from '../../api/settings'
 import _ from 'lodash'
 
-const LOAD_SETTINGS = 'LOAD_SETTINGS'
-const SAVE_SETTINGS = 'SAVE_SETTINGS'
+const LOAD = 'LOAD'
+const SAVE = 'SAVE'
 
 const state = {
-  settings: []
+  all: []
 }
 
 const getters = {
-  settings: state => state.settings,
-  mailSettings: state => {
-    const connectionId = store.state.connectionId
-    const ms = _.find(state.settings, s => s.connection.id === connectionId && s.name.toLowerCase() === 'mail')
+  settings: state => state.all,
+  mail: state => {
+    const name = 'MAIL'
+    const ms = _.find(state.settings, s => s.name.toUpperCase === name)
     if (ms) {
       return ms.value
     }
@@ -22,34 +21,37 @@ const getters = {
 
 // actions
 const actions = {
-  findAll ({ commit }) {
-    const connectionId = store.state.connectionId
-    return api.findAll(connectionId).then(response => {
-      commit(LOAD_SETTINGS, response.data)
-    })
-  },
-  saveSettings ({ commit }, payload) {
-    const connectionId = store.state.connectionId
-    return api.saveSettings(connectionId, payload).then(response => {
-      commit(SAVE_SETTINGS, {connectionId, data: response.data})
+  findAll ({commit, dispatch}) {
+    return api.findAll().then(response => {
+      commit(LOAD, response.data)
     },
     error => {
       console.log(error.response.data.message)
+      dispatch('notifications/snackError', 'Failed to get settings', {root: true})
+    })
+  },
+  save ({commit, dispatch}, payload) {
+    return api.save(payload).then(response => {
+      commit(SAVE, response.data)
+      dispatch('notifications/snackSuccess', 'Settings saved', {root: true})
+    },
+    error => {
+      console.log(error.response.data.message)
+      dispatch('notifications/snackError', 'Failed to save settings', {root: true})
     })
   }
 }
 
 // mutations
 const mutations = {
-  [LOAD_SETTINGS] (state, records) {
-    state.settings = records.map(s => {
+  [LOAD] (state, records) {
+    state.all = records.map(s => {
       s.value = JSON.parse(s.value)
       return s
     })
-    console.log(state.settings)
   },
-  [SAVE_SETTINGS] (state, payload) {
-    let i = _.findIndex(state.settings, s => s.connection.id === payload.connectionId && s.name.toLowerCase() === payload.data.name)
+  [SAVE] (state, payload) {
+    let i = _.findIndex(state.all)
     state.settings.splice(i, 1)
     payload.value = JSON.parse(payload.data.value)
     state.settings.push(payload)

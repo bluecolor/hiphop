@@ -11,6 +11,7 @@ import app from './modules/app'
 import notifications from './modules/notifications'
 import deployments from './modules/deployments'
 import labels from './modules/labels'
+import settings from './modules/settings'
 
 Vue.use(Vuex)
 
@@ -28,6 +29,7 @@ export default new Vuex.Store({
     app,
     notifications,
     deployments,
-    labels
+    labels,
+    settings
   }
 })

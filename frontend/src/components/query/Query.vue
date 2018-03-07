@@ -90,7 +90,7 @@ div.query(xs12 mt-1 style="height:100%")
     div.welcome
       div.welcome-message
         v-icon(x-large color="grey lighten-1") filter_vintage
-        h Welcome to query editor
+        h3 Welcome to query editor
 
 </template>
 
