@@ -10,6 +10,7 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 
 object Vendor {
+  val MARIADB = "MARIADB"
   val MYSQL = "MYSQL"
   val POSTGRE_SQL = "POSTGRE_SQL"
   val MS_SQL = "MS_SQL"
@@ -79,6 +80,8 @@ class Connection {
       ConnectionProvider(Vendor.MS_SQL, "com.microsoft.sqlserver.jdbc.SQLServerDriver")
     } else if(url contains "jdbc:oracle") {
       ConnectionProvider(Vendor.ORACLE, "oracle.jdbc.driver.OracleDriver")
+    } else if(url contains "jdbc:mariadb") {
+      ConnectionProvider(Vendor.MARIADB, "org.mariadb.jdbc.Driver")
     } else {
       ConnectionProvider(Vendor.UNKNOWN)
     }

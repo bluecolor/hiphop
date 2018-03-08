@@ -65,7 +65,7 @@ class SettingService @Autowired()(val settingRepository: SettingRepository){
     var s = if(o != null) o else new Setting
     s.user = userService.findMe
     s.value = setting.value
-    settingRepository.save(setting)
+    settingRepository.save(s)
   }
 
   def findSettingsByName[T](c: T, name: String)(implicit tag: ClassTag[T]): Option[T] = {

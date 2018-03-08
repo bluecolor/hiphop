@@ -60,6 +60,12 @@ class User {
   @Column(columnDefinition = "varchar(max)")
   var options: String = _
 
+
+  @BeanProperty
+  @Fetch(value = FetchMode.SUBSELECT)
+  @OneToMany(fetch = FetchType.EAGER)
+  var scripts: java.util.List[Script] = _
+
   @PrePersist @PreUpdate private def prepare = {
     username = if (username == null)  null else username.toLowerCase
     email = if (email == null)  null else email.toLowerCase

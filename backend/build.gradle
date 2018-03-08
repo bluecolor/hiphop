@@ -94,7 +94,7 @@ dependencies {
 
 	compile 'org.scala-lang:scala-library'
   compile fileTree(include: [
-    'ojdbc6.jar'
+    '*.jar'
   ], dir: 'lib')
 	// runtime files('lib/ojdbc6.jar')
 	// compile group: 'postgresql', name: 'postgresql', version: '9.3-1102.jdbc4'

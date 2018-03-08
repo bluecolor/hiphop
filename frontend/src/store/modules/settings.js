@@ -51,10 +51,11 @@ const mutations = {
     })
   },
   [SAVE] (state, payload) {
-    let i = _.findIndex(state.all)
-    state.settings.splice(i, 1)
-    payload.value = JSON.parse(payload.data.value)
-    state.settings.push(payload)
+    const id = payload.id
+    let i = _.findIndex(state.all, {id})
+    state.all.splice(i, 1)
+    payload.value = JSON.parse(payload.value)
+    state.all.push(payload)
   }
 }
 

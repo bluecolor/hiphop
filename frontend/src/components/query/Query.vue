@@ -81,7 +81,7 @@ div.query(xs12 mt-1 style="height:100%")
     v-spacer
     v-btn(icon @click="onPlay" draggable="false")
       v-icon(color="success") play_arrow
-    v-btn(icon)
+    v-btn(icon @click="onFav")
       v-icon(color="pink accent-1" draggable="false") favorite
     v-btn(icon @click="queryRightDrawer = !queryRightDrawer")
       v-icon(v-if="queryRightDrawer") keyboard_arrow_right
@@ -208,6 +208,10 @@ export default {
         clearInterval(timer)
         this.running = false
       }, 10000)
+    },
+    onFav () {
+      const q = this.editor.getSelection()
+      console.log(q)
     }
   },
   components: {
@@ -262,7 +266,7 @@ body {
   flex-direction: column;
 }
 
-.welcome-message > h {
+.welcome-message > h3 {
   font-size: 20px;
   color: silver;
 }
