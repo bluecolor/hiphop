@@ -44,7 +44,7 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
 
   private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup.lookupClass)
 
-  def findAll = queryRepository.findAll
+  def findAll = queryRepository.findByUser(userService.findMe)
 
   def query(request: QueryRequest): QueryResult = {
     askToSupervisor(toQuery(request), classOf[QueryResult])

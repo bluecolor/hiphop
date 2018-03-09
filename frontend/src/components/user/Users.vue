@@ -6,7 +6,7 @@ div(
 )
   v-container(fluid='', style='min-height: 0;', grid-list-lg='')
     v-layout(row='', wrap='')
-      v-flex(xs12='' v-for='(u, i) in users',)
+      v-flex(xs12='' v-for='(u, i) in users' v-bind:key="u.id")
         v-card
           v-card-title(:class="cardTitleClass(u)")
             .headline {{u.name}}

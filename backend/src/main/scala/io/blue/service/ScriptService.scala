@@ -23,6 +23,8 @@ class ScriptService @Autowired()(val scriptRepository: ScriptRepository) {
   @(Autowired @setter)
   private var userService: UserService = _
 
+  def findOne(id: Long) = scriptRepository.findOne(id)
+
   def findMyScripts = scriptRepository.findByUserId(userService.findMe.id)
 
   def create(script: String) = {
@@ -30,6 +32,12 @@ class ScriptService @Autowired()(val scriptRepository: ScriptRepository) {
     s.content = script
     s.user = userService.findMe
     scriptRepository.save(s)
+  }
+
+  def delete (id: Long) = {
+    val script = findOne(id)
+    scriptRepository.delete(id)
+    script
   }
 
 }

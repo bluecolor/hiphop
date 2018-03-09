@@ -6,5 +6,7 @@ export default {
     this.dispatch('users/findMe')
     this.dispatch('app/findVersion')
     this.dispatch('labels/findAll')
+    this.dispatch('scripts/findMyScripts')
+    this.dispatch('queries/findAll')
   }
 }

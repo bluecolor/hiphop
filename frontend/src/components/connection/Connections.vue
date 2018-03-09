@@ -1,5 +1,5 @@
 <template lang="pug">
-  div.connections
+  .connections
     div(
       id="e3"
       style="max-width: 600px; margin: auto;"
@@ -7,7 +7,7 @@
     )
       v-container(fluid='', style='min-height: 0;', grid-list-lg='')
         v-layout(row='', wrap='')
-          v-flex(xs12='' v-for='(con, i) in connections',)
+          v-flex(xs12='' v-for='(con, i) in connections' v-bind:key="con.id")
             v-card(dense)
               v-card-title(dense class="blue white--text")
                 .headline {{con.name}}

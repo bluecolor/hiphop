@@ -10,4 +10,5 @@ import io.blue.model._
 
 @Repository
 trait QueryRepository extends JpaRepository[Query, java.lang.Long] {
+  def findByUser(user: User): java.util.List[Query]
 }

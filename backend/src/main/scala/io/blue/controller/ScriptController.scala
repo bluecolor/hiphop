@@ -24,4 +24,7 @@ class ScriptController @Autowired()(private val scriptService: ScriptService) {
   @RequestMapping(method = Array(RequestMethod.POST))
   def create(@RequestBody script: String) = scriptService.create(script)
 
+  @RequestMapping(value = Array("/{id}"), method = Array(RequestMethod.DELETE))
+  def delete(@PathVariable("id") id: Long) = scriptService.delete(id)
+
 }

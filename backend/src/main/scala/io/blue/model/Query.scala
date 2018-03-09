@@ -12,7 +12,6 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.springframework.web.multipart.MultipartFile
 
-
 @Entity(name="queries")
 class Query {
 
@@ -44,6 +43,9 @@ class Query {
   @ManyToOne
   var user: User = _
 
+  /**
+    statuses: [WAITING, RUNNING, ERROR, WARNING, UNKNOWN]
+  */
   @BeanProperty
   var status: String = _
 

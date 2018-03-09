@@ -12,6 +12,8 @@ import notifications from './modules/notifications'
 import deployments from './modules/deployments'
 import labels from './modules/labels'
 import settings from './modules/settings'
+import scripts from './modules/scripts'
+import queries from './modules/queries'
 
 Vue.use(Vuex)
 
@@ -30,6 +32,8 @@ export default new Vuex.Store({
     notifications,
     deployments,
     labels,
-    settings
+    settings,
+    scripts,
+    queries
   }
 })
