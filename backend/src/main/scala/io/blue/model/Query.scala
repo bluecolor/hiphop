@@ -62,4 +62,8 @@ class Query {
 
   @BeanProperty
   var export: Boolean = false
+
+  @Transient
+  def isExport = export
+
 }

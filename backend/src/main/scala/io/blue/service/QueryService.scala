@@ -32,6 +32,8 @@ import io.blue.repository._
 @Service
 class QueryService @Autowired()(val queryRepository: QueryRepository)   {
 
+  val TMP_DIR = "/home/ceyhun/projects/lab/hiphop/tmp" //! change later
+
   @(Autowired @setter)
   private var appInit: AppInit = _
 
@@ -57,7 +59,11 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
       q.status = Status.WAITING
       q.connections = request.connections
       q.query = request.query
+      q.export = request.export
       queryRepository.save(q)
+    }
+    if (query.isExport) {
+      new java.io.File(s"${TMP_DIR}/${query.id}").mkdir()
     }
     askToSupervisor(query, classOf[QueryResult])
   }
@@ -66,10 +72,6 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     queryOrderRepository.save(new QueryOrder(query, connection))
 
   def updateOrder(order: QueryOrder) = queryOrderRepository.save(order)
-
-  def export(id: Long) = {
-    // askToSupervisor(ExportQuery(findOne(id)), classOf[QueryExportResult])
-  }
 
   def askToSupervisor[T](message: AnyRef, resp: Class[T]):T = {
     val supervisor = appInit.system.actorSelection("/user/supervisor")
@@ -91,6 +93,21 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     result
   }
 
+  def export(order: QueryOrder) = {
+    var result = new QueryOrderResult
+    order.startDate = new Date
+    val connector = new Connector(connectionService.findOne(order.connection.id))
+    val path = s"${TMP_DIR}/${order.query.id}/${order.connection.id}"
+    connector.dump(path, order.query.query)
+    order.endDate = new Date
+    order.status = Status.SUCCESS
+    connector.close
+    result.order = updateOrder(order)
+    result
+  }
+
+
+
   def setStatus(id: Long, status: String) = {
     var query = findOne(id)
     query.status = status
@@ -100,11 +117,9 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     }
     queryRepository.save(query)
   }
-
   def setRunning(id: Long) = setStatus(id, Status.RUNNING)
   def setWaiting(id: Long) = setStatus(id, Status.WAITING)
   def setError(id: Long) = setStatus(id, Status.ERROR)
   def setSuccess(id: Long) = setStatus(id, Status.SUCCESS)
   def setWarning(id: Long) = setStatus(id, Status.WARNING)
-
 }

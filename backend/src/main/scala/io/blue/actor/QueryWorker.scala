@@ -46,7 +46,7 @@ class QueryWorker extends Actor {
   }
 
   def onQueryOrder(order: QueryOrder) = {
-    sender ! queryService.query(order)
+    sender ! { if(order.query.isExport) queryService.export(order) else queryService.query(order) }
     self ! PoisonPill
   }
 

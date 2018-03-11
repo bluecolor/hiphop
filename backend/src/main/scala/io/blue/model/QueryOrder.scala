@@ -59,8 +59,4 @@ class QueryOrder {
   @BeanProperty
   @Column(columnDefinition = "varchar(max)")
   var message: String = _
-
-  // for export orders
-  @BeanProperty
-  var exportFile: String = _
 }

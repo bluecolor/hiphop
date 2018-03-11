@@ -26,7 +26,8 @@ setInterval(() => {
 const getters = {
   result: state => state.result,
   logs: state => state.logs,
-  queries: state => state.queries,
+  queries: state => _.filter(state.queries, q => !q.export),
+  exports: state => _.filter(state.queries, q => q.export),
   isRunning: state => state.running
 }
 
@@ -102,7 +103,9 @@ const mutations = {
     if (!query) {
       state.queries.splice(0, 0, payload.query)
     }
-    state.result = payload
+    if (!payload.query.export) {
+      state.result = payload
+    }
   },
   [ADD_LOG] (state, payload) {
     payload.time = new Date()

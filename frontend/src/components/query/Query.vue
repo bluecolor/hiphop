@@ -4,6 +4,7 @@
 div.query(xs12 mt-1 style="height:100%")
   v-navigation-drawer(mt-3 fixed v-model="queryRightDrawer" right="" clipped app style="z-index:0;")
     v-container.drawer-container
+
       v-list(v-show="e1==='connections'" dense)
         v-list-tile-content.top-filters
           v-text-field(clearable v-model="connectionFilter.search" append-icon="search" style="padding:10px 10px 0px 10px;" )
@@ -49,6 +50,7 @@ div.query(xs12 mt-1 style="height:100%")
           v-list-tile-action
             v-checkbox(color="success" v-model="connectionFilter.selected[c.id]")
 
+
       v-layout(v-show="e1==='favorites'" column style="display:flex;")
         v-container(style="padding:0px; max-height: 70px;")
           v-list-tile-content.top-filters(style="padding:0px;")
@@ -85,7 +87,28 @@ div.query(xs12 mt-1 style="height:100%")
                     v-list
                       v-list-tile(v-for='i in historyItemMenu', :key='i.title' @click='onHistoryMenuItemClick(i.id, item.id)')
                         v-list-tile-title {{ i.title }}
-              v-divider(v-if="index + 1 < queries.length" )
+              v-divider(v-if="index + 1 < queries.length")
+      v-layout(v-show="e1==='exports'" column style="display:flex;")
+        v-container(style="padding:0px; max-height: 70px;")
+          v-list-tile-content.top-filters(style="padding:0px;")
+            v-text-field(clearable v-model="exportFilter.search" append-icon="search" style="padding:10px 10px 0px 10px;" )
+        v-container.history-list-container
+          v-list(two-line="" dense)
+            template(v-for="(item, index) in _exports")
+              v-list-tile.history-list-item(avatar="" ripple="" @click="")
+                v-list-tile-action
+                  v-icon(:color="historyItemIconColor(item)") {{historyItemIcon(item)}}
+                v-list-tile-content(@click="")
+                  v-list-tile-title {{ unixFromNow(item.startDate) || 'Some time ago' }}
+                  v-list-tile-sub-title {{ ellipsis(item.query) }}
+                v-list-tile-action
+                  v-menu(bottom='', left)
+                    v-btn(icon, slot='activator', dark)
+                      v-icon(color="grey darken-1") more_vert
+                    v-list
+                      v-list-tile(v-for='i in exportItemMenu', :key='i.title' @click='onExportMenuItemClick(i.id, item.id)')
+                        v-list-tile-title {{ i.title }}
+              v-divider(v-if="index + 1 < queries.length")
 
     v-bottom-nav(absolute="" :value="true" :active.sync="e1" color="transparent", style="bottom:30px")
       v-btn(flat="" color="teal" value="connections")
@@ -291,18 +314,26 @@ export default {
           iron: '6%'
         }
       ],
-      historyItemMenu: [
-        {
-          title: 'Copy query to clipboard',
-          id: 'COPY_QUERY_CLIP'
-        }, {
-          title: 'Copy query to editor',
-          id: 'COPY_QUERY_EDITOR'
-        }, {
-          title: 'Export resultset',
-          id: 'DOWNLOAD_RESULT_SET'
-        }
-      ],
+      historyItemMenu: [{
+        title: 'Copy query to clipboard',
+        id: 'COPY_CLIP'
+      }, {
+        title: 'Copy query to editor',
+        id: 'COPY_EDITOR'
+      }, {
+        title: 'Export',
+        id: 'EXPORT'
+      }],
+      exportItemMenu: [{
+        title: 'Copy query to clipboard',
+        id: 'COPY_CLIP'
+      }, {
+        title: 'Copy query to editor',
+        id: 'COPY_EDITOR'
+      }, {
+        title: 'Download',
+        id: 'DOWNLOAD'
+      }],
       displayPlayMenu: false,
       progressColor: 'primary',
       running: false,
@@ -314,6 +345,9 @@ export default {
         search: undefined
       },
       histFilter: {
+        search: undefined
+      },
+      exportFilter: {
         search: undefined
       },
       connectionFilter: {
@@ -366,6 +400,7 @@ export default {
     ...mapGetters('queries', [
       'logs',
       'queries',
+      'exports',
       'result',
       'isRunning'
     ]),
@@ -396,6 +431,13 @@ export default {
       }
       return _.filter(this.queries, q =>
         q.query.toLowerCase().indexOf(this.histFilter.search.toLowerCase()) > -1)
+    },
+    _exports () {
+      if (_.isEmpty(this.exportFilter.search)) {
+        return this.exports
+      }
+      return _.filter(this.exports, q =>
+        q.query.toLowerCase().indexOf(this.exportFilter.search.toLowerCase()) > -1)
     },
     editor () {
       return this.$refs.cm.codemirror
@@ -560,10 +602,16 @@ export default {
     ellipsis (s, l) {
       return _.truncate(s, {length: l || 30})
     },
-    onHistoryMenuItemClick (m, h) {
+    onHistoryMenuItemClick (m, i) {
       switch (m) {
-        case 'COPY_QUERY_CLIP': this.onCopyQueryClip(h); return
-        case 'COPY_QUERY_EDITOR': this.onCopyQueryEditor(h); return
+        case 'COPY_CLIP': this.onCopyQueryClip(i); return
+        case 'COPY_EDITOR': this.onCopyQueryEditor(i); return
+      }
+    },
+    onExportMenuItemClick (m, i) {
+      switch (m) {
+        case 'COPY_CLIP': this.onCopyQueryClip(i); return
+        case 'COPY_EDITOR': this.onCopyQueryEditor(i); return
       }
     },
     onCopyQueryClip (id) {

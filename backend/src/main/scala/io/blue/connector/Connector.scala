@@ -1,5 +1,7 @@
 package io.blue.connector
 
+import java.io.{File, FileOutputStream, OutputStreamWriter, BufferedWriter}
+import scala.collection.mutable.ListBuffer
 import scala.beans.BeanProperty
 import io.blue.exception._
 import java.sql.Connection
@@ -47,6 +49,20 @@ class Connector(private val c: io.blue.model.Connection) {
     }
     connection.close
     d
+  }
+
+  def dump(path: String, query: String) = {
+    connect
+    val stmt = connection.createStatement
+    val rs = stmt.executeQuery(query)
+    val c = columns(query).zipWithIndex
+    val w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(path))))
+    while(rs.next) {
+      val line = c.map{case (_, index) => rs.getString(index+1)}.mkString(",")
+      w.write(line)
+      w.newLine()
+    }
+    w.close
   }
 
   def isConnected = connection != null

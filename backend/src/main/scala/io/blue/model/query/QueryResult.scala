@@ -20,10 +20,10 @@ class QueryResult {
 
   @BeanProperty
   @JsonSerialize
-  def startDate = query.startDate
+  def startDate = if(query != null) query.startDate else new Date
 
   @BeanProperty
   @JsonSerialize
-  def endDate = query.endDate
+  def endDate = if (query != null) query.endDate else new Date
 
 }

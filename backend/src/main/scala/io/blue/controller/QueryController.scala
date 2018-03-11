@@ -26,7 +26,4 @@ class QueryController  @Autowired()(private val queryService: QueryService) {
   def query (@RequestBody queryRequest: QueryRequest) =
     queryService.query(queryRequest)
 
-  @RequestMapping(value = Array("/{id}"), method = Array(RequestMethod.PUT))
-  def export(@PathVariable("id") id: Long) = queryService.export(id)
-
 }

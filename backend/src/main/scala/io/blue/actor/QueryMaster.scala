@@ -48,6 +48,14 @@ class QueryMaster extends Actor {
   }
 
   def onQuery(query: Query) = {
+    if(query.isExport) {
+      sender ! {
+        var result = new QueryResult
+        result.query.status = Status.RUNNING
+        result.query = query
+        result
+      }
+    }
     var container = QueryResultContainer(sender)
     container.result.query = query
     results += (query.id -> container)

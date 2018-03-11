@@ -18,7 +18,7 @@ apply plugin: 'scala'
 sourceSets {
     main {
         scala {
-            srcDirs = ['src/main/scala']
+          srcDirs = ['src/main/scala']
         }
     }
 }
@@ -145,5 +145,7 @@ dependencies {
   // https://mvnrepository.com/artifact/com.github.seratch/jslack
   compile group: 'com.github.seratch', name: 'jslack', version: '1.0.12'
 
+  // https://mvnrepository.com/artifact/commons-io/commons-io
+  // compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
 }
