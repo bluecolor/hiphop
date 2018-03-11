@@ -36,6 +36,9 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
   private var appInit: AppInit = _
 
   @(Autowired @setter)
+  private var queryOrderRepository: QueryOrderRepository = _
+
+  @(Autowired @setter)
   private var connectionService: ConnectionService = _
 
   @(Autowired @setter)
@@ -48,20 +51,24 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
   def findAll = queryRepository.findByUser(userService.findMe)
 
   def query(request: QueryRequest): QueryResult = {
-    askToSupervisor(toQuery(request), classOf[QueryResult])
+    val query = {
+      var q = new Query
+      q.user = userService.findMe
+      q.status = Status.WAITING
+      q.connections = request.connections
+      q.query = request.query
+      queryRepository.save(q)
+    }
+    askToSupervisor(query, classOf[QueryResult])
   }
 
-  def export(id: Long): QueryExportResult = {
-    askToSupervisor(ExportQuery(findOne(id)), classOf[QueryExportResult])
-  }
+  def createOrder(query: Query, connection: io.blue.model.Connection) =
+    queryOrderRepository.save(new QueryOrder(query, connection))
 
-  private def toQuery(request: QueryRequest): Query = {
-    var q = new Query
-    q.user = userService.findMe
-    q.status = Status.WAITING
-    q.connections = request.connections
-    q.query = request.query
-    queryRepository.save(q)
+  def updateOrder(order: QueryOrder) = queryOrderRepository.save(order)
+
+  def export(id: Long) = {
+    // askToSupervisor(ExportQuery(findOne(id)), classOf[QueryExportResult])
   }
 
   def askToSupervisor[T](message: AnyRef, resp: Class[T]):T = {
@@ -71,31 +78,16 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     Await.result(future, timeout.duration).asInstanceOf[T]
   }
 
-  def query(queryId: Long, query: String, connection: io.blue.model.Connection) = {
+  def query(order: QueryOrder) = {
     var result = new QueryOrderResult
-    result.queryId = queryId
-    result.connectionId = connection.id
-    result.startDate = new Date
-    val connector = new Connector(connectionService.findOne(connection.id))
-    result.columns = connector.columns(query)
-    result.data = connector.data(query, result.columns)
-    result.endDate = new Date
-    result.status = Status.SUCCESS
+    order.startDate = new Date
+    val connector = new Connector(connectionService.findOne(order.connection.id))
+    result.columns = connector.columns(order.query.query)
+    result.data = connector.data(order.query.query, result.columns)
+    order.endDate = new Date
+    order.status = Status.SUCCESS
     connector.close
-    result
-  }
-
-  def export(queryId: Long, query: String, connection: io.blue.model.Connection) = {
-    var result = new QueryExportOrderResult
-    result.queryId = queryId
-    result.connectionId = connection.id
-    result.startDate = new Date
-    val connector = new Connector(connectionService.findOne(connection.id))
-    result.columns = connector.columns(query)
-    result.data = connector.data(query, result.columns)
-    result.endDate = new Date
-    result.status = Status.SUCCESS
-    connector.close
+    result.order = updateOrder(order)
     result
   }
 

@@ -5,31 +5,18 @@ import java.util.Date
 import com.fasterxml.jackson.annotation._
 import javax.validation.constraints.{NotNull}
 import scala.beans.BeanProperty
-
+import io.blue.model._
 
 class QueryOrderResult {
 
   @BeanProperty
-  var connectionId: Long = _
-
-  @BeanProperty
-  var queryId: Long = _
-
-  @BeanProperty
-  var status: String = _
-
-  @BeanProperty
-  var startDate: Date = _
-
-  @BeanProperty
-  var endDate: Date = _
-
-  @BeanProperty
-  var columns: List[Column] = _
+  var order: QueryOrder = _
 
   @BeanProperty
   var data: List[List[String]] = _
 
   @BeanProperty
-  var message: String = _
+  var columns: List[Column] = _
+
+  def queryId = order.query.id
 }

@@ -38,16 +38,12 @@ class QueryMaster extends Actor {
 
 
   case class QueryResultContainer(sender: ActorRef, result: QueryResult = new QueryResult )
-  case class QueryExportContainer(sender: ActorRef, result: QueryExportResult = new QueryExportResult)
 
   private var results: Map[Long, QueryResultContainer] = Map()
-  private var exports: Map[Long, QueryExportContainer] = Map()
 
   def receive = {
     case m: Query => onQuery(m)
-    case m: ExportQuery => onExport(m.query)
     case m: QueryOrderResult => onQueryOrderResult(m)
-    case m: QueryExportOrderResult => onQueryExportOrderResult(m)
     case _ => log.debug("Opps ?")
   }
 
@@ -58,17 +54,7 @@ class QueryMaster extends Actor {
     queryService.setRunning(query.id)
     query.connections.foreach{connection =>
       val actor = context.actorOf(springExtension.props("queryWorker"))
-      actor ! QueryOrder(query.id, query.query, connection)
-    }
-  }
-
-  def onExport(query: Query) = {
-    var container = QueryExportContainer(sender)
-    container.result.query = query
-    exports += (query.id -> container)
-    query.connections.foreach{connection =>
-      val actor = context.actorOf(springExtension.props("queryWorker"))
-      actor ! QueryExportOrder(query.id, query.query, connection)
+      actor ! queryService.createOrder(query, connection)
     }
   }
 
@@ -85,16 +71,9 @@ class QueryMaster extends Actor {
     }
   }
 
-  def onQueryExportOrderResult(r: QueryExportOrderResult) = {
-  }
-
-
   def sendQueryResult(container: QueryResultContainer) {
     container.result.query = queryService.findOne(container.result.query.id)
     container.sender ! container.result
-  }
-
-  def sendExportResult(container: QueryResultContainer) {
   }
 
 }

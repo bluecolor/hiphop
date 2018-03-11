@@ -12,12 +12,18 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.springframework.web.multipart.MultipartFile
 
-@Entity(name="query_export_orders")
-class QueryExportOrder {
+
+
+@Entity(name="query_orders")
+class QueryOrder {
 
   def this(id: Long) {
     this()
     this.id = id
+  }
+
+  def this(query: Query, connection: Connection) {
+    this()
   }
 
   @Id
@@ -53,5 +59,7 @@ class QueryExportOrder {
   @Column(columnDefinition = "varchar(max)")
   var message: String = _
 
-
+  // for export orders
+  @BeanProperty
+  var exportFile: String = _
 }

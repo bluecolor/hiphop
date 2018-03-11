@@ -43,6 +43,11 @@ class Query {
   @ManyToOne
   var user: User = _
 
+  @BeanProperty
+  @Fetch(value= FetchMode.JOIN)
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "query")
+  var orders: java.util.Set[QueryOrder] = _
+
   /**
     statuses: [WAITING, RUNNING, ERROR, WARNING, UNKNOWN]
   */
@@ -55,4 +60,6 @@ class Query {
   @BeanProperty
   var endDate: Date = _
 
+  @BeanProperty
+  var export: Boolean = false
 }

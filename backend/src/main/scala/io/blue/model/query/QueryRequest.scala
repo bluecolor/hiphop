@@ -12,6 +12,8 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.springframework.web.multipart.MultipartFile
 
+import io.blue.model._
+
 class QueryRequest {
 
   @BeanProperty
@@ -19,7 +21,4 @@ class QueryRequest {
 
   @BeanProperty
   var query: String = _
-
-  @BeanProperty
-  var export: Boolean = false
 }
