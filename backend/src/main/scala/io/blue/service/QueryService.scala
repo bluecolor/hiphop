@@ -93,9 +93,6 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
 
   def setStatus(id: Long, status: String) = {
     var query = findOne(id)
-    if(query == null) {
-      println("?>???")
-    }
     query.status = status
     status match {
       case Status.RUNNING => query.startDate = new Date

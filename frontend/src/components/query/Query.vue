@@ -437,11 +437,9 @@ export default {
     ]),
     onPlayOver () {
       this.displayPlayMenu = true
-      console.log('play over')
     },
     onPlayOut () {
       this.displayPlayMenu = false
-      console.log('play out')
     },
     historyItemIcon (item) {
       const status = item.status || 'UNKNOWN'
@@ -500,21 +498,39 @@ export default {
         this.snackWarning('You must select at least one connection')
         return
       }
-
       const timer = setInterval(() => {
         this.progressColor = colors[_.random(4)]
       }, 500)
-
       this.logInfo(`Executing query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
       this.running = true
-      this.query({connections, query}).finally(() => {
+      this.query({connections, query}).then(q => {
+        this.logSuccess(`Finished query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
+      }).catch(e => {
+        this.logError(e)
+      }).finally(() => {
         clearInterval(timer)
         this.running = false
         this.console.content = 'grid'
+      })
+    },
+    onExport () {
+      const query = this.editor.getValue()
+      if (_.isEmpty(query)) {
+        this.snackWarning('Nothing to export')
+        return
+      }
+      const s = this.connectionFilter.selected
+      const connections = _.chain(s).keys().filter(k => s[k]).map(c => parseInt(c)).value()
+      if (_.isEmpty(connections)) {
+        this.snackWarning('You must select at least one connection')
+        return
+      }
+      this.query({connections, query, export: true}).then(q => {
+        this.logSuccess(`Export request sent for query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
       }).then(q => {
         this.logSuccess(`Finished query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
       }).catch(e => {
-        this.logSuccess(e)
+        this.logError(e)
       })
     },
     onSaveFav () {

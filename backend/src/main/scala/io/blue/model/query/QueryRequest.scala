@@ -21,4 +21,8 @@ class QueryRequest {
 
   @BeanProperty
   var query: String = _
+
+  @BeanProperty
+  var export: Boolean = false
+
 }

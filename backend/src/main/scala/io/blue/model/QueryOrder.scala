@@ -12,8 +12,6 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.springframework.web.multipart.MultipartFile
 
-
-
 @Entity(name="query_orders")
 class QueryOrder {
 
@@ -24,6 +22,8 @@ class QueryOrder {
 
   def this(query: Query, connection: Connection) {
     this()
+    this.query = query
+    this.connection = connection
   }
 
   @Id
@@ -35,6 +35,7 @@ class QueryOrder {
   @NotNull
   @Fetch(value= FetchMode.SELECT)
   @ManyToOne
+  @JsonIgnore
   var query: Query = _
 
   @BeanProperty
