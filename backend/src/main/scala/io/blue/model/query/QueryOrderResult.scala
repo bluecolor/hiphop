@@ -29,4 +29,7 @@ class QueryOrderResult {
 
   @BeanProperty
   var data: List[List[String]] = _
+
+  @BeanProperty
+  var message: String = _
 }

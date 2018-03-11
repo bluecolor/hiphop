@@ -41,7 +41,8 @@ class Supervisor extends Actor {
   }
 
   def receive = {
-    case query: Query => queryMaster.forward(query)
+    case order: Query => queryMaster.forward(order)
+    case order: ExportQuery => queryMaster.forward(order)
     case Tick => tick
     case _ => println("Opps ?")
   }

@@ -42,11 +42,17 @@ class QueryWorker extends Actor {
 
   def receive = {
     case order: QueryOrder => onQueryOrder(order)
+    case order: QueryExportOrder => onQueryExportOrder(order)
     case _ => log.debug("Opps ?")
   }
 
   def onQueryOrder(order: QueryOrder) = {
     sender ! queryService.query(order.queryId, order.query, order.connection)
+    self ! PoisonPill
+  }
+
+  def onQueryExportOrder(order: QueryExportOrder) = {
+    sender ! queryService.export(order.queryId, order.query, order.connection)
     self ! PoisonPill
   }
 

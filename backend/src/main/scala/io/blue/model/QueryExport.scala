@@ -12,8 +12,8 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.springframework.web.multipart.MultipartFile
 
-@Entity(name="queries")
-class Query {
+@Entity(name="query_exports")
+class QueryExport {
 
   def this(id: Long) {
     this()
@@ -27,21 +27,9 @@ class Query {
 
   @BeanProperty
   @NotNull
-  var query: String = _
-
-  @BeanProperty
-  @Fetch(value= FetchMode.JOIN)
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "query_connection",
-    joinColumns = Array(new JoinColumn(name = "query_id", nullable = false, updatable = false)),
-    inverseJoinColumns = Array(new JoinColumn(name = "connection_id",nullable = false, updatable = false))
-  )
-  var connections: java.util.Set[Connection] = _
-
-  @BeanProperty
   @Fetch(value= FetchMode.SELECT)
   @ManyToOne
-  var user: User = _
+  var query: Query = _
 
   /**
     statuses: [WAITING, RUNNING, ERROR, WARNING, UNKNOWN]

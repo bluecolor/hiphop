@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.validation.annotation._
 
 import io.blue.model._
+import io.blue.model.query._
 import io.blue.exception.UniqueConstraintViolationException
 import io.blue.service._
 import org.springframework.web.multipart.MultipartFile
@@ -24,5 +25,8 @@ class QueryController  @Autowired()(private val queryService: QueryService) {
   @RequestMapping(method = Array(RequestMethod.POST))
   def query (@RequestBody queryRequest: QueryRequest) =
     queryService.query(queryRequest)
+
+  @RequestMapping(value = Array("/{id}"), method = Array(RequestMethod.PUT))
+  def export(@PathVariable("id") id: Long) = queryService.export(id)
 
 }

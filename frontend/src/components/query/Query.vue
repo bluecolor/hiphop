@@ -83,8 +83,8 @@ div.query(xs12 mt-1 style="height:100%")
                     v-btn(icon, slot='activator', dark)
                       v-icon(color="grey darken-1") more_vert
                     v-list
-                      v-list-tile(v-for='item in historyItemMenu', :key='item.title', @click='')
-                        v-list-tile-title {{ item.title }}
+                      v-list-tile(v-for='i in historyItemMenu', :key='i.title' @click='onHistoryMenuItemClick(i.id, item.id)')
+                        v-list-tile-title {{ i.title }}
               v-divider(v-if="index + 1 < queries.length" )
 
     v-bottom-nav(absolute="" :value="true" :active.sync="e1" color="transparent", style="bottom:30px")
@@ -92,6 +92,8 @@ div.query(xs12 mt-1 style="height:100%")
         v-icon cloud
       v-btn(flat="" color="teal" value="history")
         v-icon history
+      v-btn(flat="" color="teal" value="exports")
+        v-icon file_download
       v-btn(flat="" color="teal" value="favorites")
         v-icon favorite
   codemirror(
@@ -113,14 +115,15 @@ div.query(xs12 mt-1 style="height:100%")
     v-btn(icon @click="console.content ='grid'")
       v-icon(color="light-blue darken-3" :style="'opacity:' + opacity('grid')") grid_on
     v-btn(icon @click="console.content ='logs'")
-      v-icon(color="brown darken-1" :style="'opacity:' + opacity('logs')") bug_report
-    v-btn(v-if="console.minified" icon @click="console.minified = false")
-      v-icon keyboard_arrow_up
-    v-btn(v-else icon @click="console.minified = true")
-      v-icon keyboard_arrow_down
+      v-icon(color="orange" :style="'opacity:' + opacity('logs')") bug_report
+    v-btn(v-show="queryId" icon @click="download")
+      v-icon(color="green") file_download
     v-spacer
-    v-btn(icon @click="onPlay" draggable="false")
-      v-icon(color="success") play_arrow
+    .play-container(@mouseleave="onPlayOut")
+      v-btn.palay-and-export(fab dark small color="primary" :style="`visibility:${playMenuVis};`")
+        v-icon(dark="") file_download
+      v-btn.play(icon @click="onPlay" @mouseenter="onPlayOver")
+        v-icon(color="success") play_arrow
     v-btn(icon @click="onSaveFav" :disabled="!isSelected")
       v-icon(color="pink accent-1" draggable="false") favorite
     v-btn(icon @click="queryRightDrawer = !queryRightDrawer")
@@ -131,16 +134,40 @@ div.query(xs12 mt-1 style="height:100%")
       div.welcome-message
         v-icon(x-large color="grey lighten-1") filter_vintage
         h3 Welcome to query editor
-    div.logs(v-show="console.content==='logs'" ref="consoleLogs")
-      v-list(one-line="" dense)
+    div.logs(v-show="console.content==='logs'")
+      div.welcome(v-if="logs.length === 0")
+        div.welcome-message
+          v-icon(x-large color="grey lighten-1") filter_vintage
+          h3 Welcome to query editor
+      v-list(v-else one-line="" dense)
         template(v-for="(item, index) in logs")
-          v-list-tile.script-list-item(avatar="" ripple="" @click="")
+          v-list-tile.script-list-item(avatar ripple @click="")
             v-list-tile-action
               v-icon(:color="item.iconColor") {{item.iconName}}
             v-list-tile-content(@click="")
               v-list-tile-title {{ item.elapsed || dateFromNow(item.date) }}
               v-list-tile-sub-title {{ ellipsis(item.message, 100) }}
+            v-list-tile-action
+              v-btn(icon @click="onCopyLog(item)")
+                v-icon(color="grey") content_copy
           v-divider(v-if="index + 1 < logs.length" )
+    div.query-result(v-show="console.content==='grid'")
+      div.welcome(v-if="resultConnections.length === 0")
+        div.welcome-message
+          v-icon(x-large color="grey lighten-1") filter_vintage
+          h3 Welcome to query editor
+      v-expansion-panel(v-else expand)
+        v-expansion-panel-content.elevation-1(v-for="(c,i) in resultConnections" :key="c.id" :value="i === 1")
+          div.query-result(slot="header") {{c.name}}
+          v-data-table(:headers="headers" :items="items" hide-actions="")
+            template(slot="items" slot-scope="props")
+              td {{ props.item.name }}
+              td.text-xs-right {{ props.item.calories }}
+              td.text-xs-right {{ props.item.fat }}
+              td.text-xs-right {{ props.item.carbs }}
+              td.text-xs-right {{ props.item.protein }}
+              td.text-xs-right {{ props.item.iron }}
+
 </template>
 
 <script>
@@ -148,16 +175,122 @@ div.query(xs12 mt-1 style="height:100%")
 import _ from 'lodash'
 import moment from 'moment'
 import {mapGetters, mapActions} from 'vuex'
-import {codemirror} from 'vue-codemirror'
+import {codemirror, CodeMirror} from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/mode/sql/sql.js'
 import 'codemirror/addon/selection/active-line.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/hint/sql-hint.js'
+// import 'codemirror/addon/hint/anyword-hint.js'
 
 export default {
   data () {
     return {
+      headers: [
+        {
+          text: 'Dessert (100g serving)',
+          align: 'left',
+          sortable: false,
+          value: 'name'
+        },
+        { text: 'Calories', value: 'calories' },
+        { text: 'Fat (g)', value: 'fat' },
+        { text: 'Carbs (g)', value: 'carbs' },
+        { text: 'Protein (g)', value: 'protein' },
+        { text: 'Iron (%)', value: 'iron' }
+      ],
+      items: [
+        {
+          value: false,
+          name: 'Frozen Yogurt',
+          calories: 159,
+          fat: 6.0,
+          carbs: 24,
+          protein: 4.0,
+          iron: '1%'
+        },
+        {
+          value: false,
+          name: 'Ice cream sandwich',
+          calories: 237,
+          fat: 9.0,
+          carbs: 37,
+          protein: 4.3,
+          iron: '1%'
+        },
+        {
+          value: false,
+          name: 'Eclair',
+          calories: 262,
+          fat: 16.0,
+          carbs: 23,
+          protein: 6.0,
+          iron: '7%'
+        },
+        {
+          value: false,
+          name: 'Cupcake',
+          calories: 305,
+          fat: 3.7,
+          carbs: 67,
+          protein: 4.3,
+          iron: '8%'
+        },
+        {
+          value: false,
+          name: 'Gingerbread',
+          calories: 356,
+          fat: 16.0,
+          carbs: 49,
+          protein: 3.9,
+          iron: '16%'
+        },
+        {
+          value: false,
+          name: 'Jelly bean',
+          calories: 375,
+          fat: 0.0,
+          carbs: 94,
+          protein: 0.0,
+          iron: '0%'
+        },
+        {
+          value: false,
+          name: 'Lollipop',
+          calories: 392,
+          fat: 0.2,
+          carbs: 98,
+          protein: 0,
+          iron: '2%'
+        },
+        {
+          value: false,
+          name: 'Honeycomb',
+          calories: 408,
+          fat: 3.2,
+          carbs: 87,
+          protein: 6.5,
+          iron: '45%'
+        },
+        {
+          value: false,
+          name: 'Donut',
+          calories: 452,
+          fat: 25.0,
+          carbs: 51,
+          protein: 4.9,
+          iron: '22%'
+        },
+        {
+          value: false,
+          name: 'KitKat',
+          calories: 518,
+          fat: 26.0,
+          carbs: 65,
+          protein: 7,
+          iron: '6%'
+        }
+      ],
       historyItemMenu: [
         {
           title: 'Copy query to clipboard',
@@ -166,10 +299,11 @@ export default {
           title: 'Copy query to editor',
           id: 'COPY_QUERY_EDITOR'
         }, {
-          title: 'Download resultset',
+          title: 'Export resultset',
           id: 'DOWNLOAD_RESULT_SET'
         }
       ],
+      displayPlayMenu: false,
       progressColor: 'primary',
       running: false,
       console: {
@@ -215,7 +349,7 @@ export default {
         lineNumbers: true,
         line: true,
         styleActiveLine: true,
-        extraKeys: {'Ctrl-Space': 'autocomplete'}
+        extraKeys: {'Ctrl-Space': 'autocomplete', 'Ctrl-Enter': 'play'}
       }
     }
   },
@@ -231,8 +365,24 @@ export default {
     ]),
     ...mapGetters('queries', [
       'logs',
-      'queries'
+      'queries',
+      'result',
+      'isRunning'
     ]),
+    playMenuVis () {
+      return this.displayPlayMenu ? 'visible' : 'hidden'
+    },
+    queryId () {
+      if (this.result && this.result.query) {
+        return this.result.query.id
+      }
+    },
+    resultConnections () {
+      if (!this.result) {
+        return []
+      }
+      return this.result.query.connections
+    },
     favScripts () {
       if (_.isEmpty(this.favFilter.search)) {
         return this.scripts
@@ -279,11 +429,20 @@ export default {
       removeFav: 'remove'
     }),
     ...mapActions('notifications', [
-      'snackWarning'
+      'snackWarning', 'snackInfo'
     ]),
     ...mapActions('queries', [
+      'query',
       'log', 'logInfo', 'logError', 'logSuccess'
     ]),
+    onPlayOver () {
+      this.displayPlayMenu = true
+      console.log('play over')
+    },
+    onPlayOut () {
+      this.displayPlayMenu = false
+      console.log('play out')
+    },
     historyItemIcon (item) {
       const status = item.status || 'UNKNOWN'
       switch (status) {
@@ -324,21 +483,39 @@ export default {
     onActive (e) {
     },
     onPlay () {
+      if (this.isRunning) {
+        this.snackWarning('Wait for the current query to finish!')
+      }
+
+      const colors = ['primary', 'error', 'warning', 'success']
       const query = this.editor.getValue()
       if (_.isEmpty(query)) {
         this.snackWarning('Nothing to execute')
         return
       }
-      this.running = true
-      const colors = ['primary', 'error', 'warning', 'success']
+      const s = this.connectionFilter.selected
+      const connections = _.chain(s).keys().filter(k => s[k]).map(c => parseInt(c)).value()
+
+      if (_.isEmpty(connections)) {
+        this.snackWarning('You must select at least one connection')
+        return
+      }
+
       const timer = setInterval(() => {
         this.progressColor = colors[_.random(4)]
       }, 500)
-      this.logInfo('Started execution ...')
-      setTimeout(() => {
+
+      this.logInfo(`Executing query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
+      this.running = true
+      this.query({connections, query}).finally(() => {
         clearInterval(timer)
         this.running = false
-      }, 10000)
+        this.console.content = 'grid'
+      }).then(q => {
+        this.logSuccess(`Finished query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
+      }).catch(e => {
+        this.logSuccess(e)
+      })
     },
     onSaveFav () {
       const q = this.editor.getSelection()
@@ -365,7 +542,39 @@ export default {
       }
     },
     ellipsis (s, l) {
-      return _.truncate(s, l || 15)
+      return _.truncate(s, {length: l || 30})
+    },
+    onHistoryMenuItemClick (m, h) {
+      switch (m) {
+        case 'COPY_QUERY_CLIP': this.onCopyQueryClip(h); return
+        case 'COPY_QUERY_EDITOR': this.onCopyQueryEditor(h); return
+      }
+    },
+    onCopyQueryClip (id) {
+      const query = _.find(this.queries, {id}).query
+      let inp = document.createElement('input')
+      document.body.appendChild(inp)
+      inp.value = query
+      inp.select()
+      document.execCommand('copy', false)
+      inp.remove()
+      this.snackInfo('Copied query')
+    },
+    onCopyQueryEditor (id) {
+      const query = _.find(this.queries, {id}).query
+      this.editor.setValue(query)
+    },
+    onCopyLog (log) {
+      const message = log.message
+      let inp = document.createElement('input')
+      document.body.appendChild(inp)
+      inp.value = message
+      inp.select()
+      document.execCommand('copy', false)
+      inp.remove()
+      this.snackInfo('Copied log message')
+    },
+    download () {
     }
   },
   components: {
@@ -375,6 +584,10 @@ export default {
     this.drag.e = document.getElementsByClassName('CodeMirror cm-s-default')[0]
     this.drag.style = window.getComputedStyle(this.drag.e)
     this.drag.h = parseInt(this.drag.style.height, 10)
+
+    CodeMirror.commands.play = (cm) => {
+      this.onPlay()
+    }
   }
 }
 </script>
@@ -384,6 +597,10 @@ export default {
   cursor: ns-resize;
   height: 2px;
   background-color: transparent;
+}
+
+.drag-handle:hover {
+  background-color:rgba(221, 183, 183, 0.514);
 }
 
 body {
@@ -424,7 +641,6 @@ body {
   font-size: 20px;
   color: silver;
 }
-
 .history,
 .scripts {
   /* height: 100%; */
@@ -433,6 +649,13 @@ body {
   width: 100%;
 }
 
+.query-result ul.expansion-panel,
+.query-result .expansion-panel__body > div .table__overflow {
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.query-result > div,
 .drawer-container {
   display: flex;
   flex-direction: column;
@@ -440,6 +663,7 @@ body {
   padding: 0px;
 }
 
+.query-result,
 .logs,
 .history-list-container,
 .fav-list-container {
@@ -466,6 +690,25 @@ body {
 .script-list-item:hover .btn--icon {
   display:unset;
 }
+
+.play-container {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 41px;
+}
+
+
+.palay-and-export {
+  visibility: hidden;
+  width: 0px;
+  height: 0px;
+}
+
+.play-container .btn--floating.btn--small {
+  height: 30px;
+  width: 30px;
+}
+
 
 </style>
 

@@ -30,7 +30,6 @@ import io.blue.actor.message._
 import io.blue.repository._
 
 @Service
-@Transactional
 class QueryService @Autowired()(val queryRepository: QueryRepository)   {
 
   @(Autowired @setter)
@@ -44,10 +43,16 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
 
   private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup.lookupClass)
 
+  def findOne(id: Long) = queryRepository.findOne(id)
+
   def findAll = queryRepository.findByUser(userService.findMe)
 
   def query(request: QueryRequest): QueryResult = {
     askToSupervisor(toQuery(request), classOf[QueryResult])
+  }
+
+  def export(id: Long): QueryExportResult = {
+    askToSupervisor(ExportQuery(findOne(id)), classOf[QueryExportResult])
   }
 
   private def toQuery(request: QueryRequest): Query = {
@@ -66,20 +71,51 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     Await.result(future, timeout.duration).asInstanceOf[T]
   }
 
-
   def query(queryId: Long, query: String, connection: io.blue.model.Connection) = {
-    var result = new io.blue.model.query.QueryOrderResult
+    var result = new QueryOrderResult
     result.queryId = queryId
     result.connectionId = connection.id
     result.startDate = new Date
     val connector = new Connector(connectionService.findOne(connection.id))
     result.columns = connector.columns(query)
-    result.endDate = new Date
     result.data = connector.data(query, result.columns)
+    result.endDate = new Date
     result.status = Status.SUCCESS
     connector.close
     result
   }
 
+  def export(queryId: Long, query: String, connection: io.blue.model.Connection) = {
+    var result = new QueryExportOrderResult
+    result.queryId = queryId
+    result.connectionId = connection.id
+    result.startDate = new Date
+    val connector = new Connector(connectionService.findOne(connection.id))
+    result.columns = connector.columns(query)
+    result.data = connector.data(query, result.columns)
+    result.endDate = new Date
+    result.status = Status.SUCCESS
+    connector.close
+    result
+  }
+
+  def setStatus(id: Long, status: String) = {
+    var query = findOne(id)
+    if(query == null) {
+      println("?>???")
+    }
+    query.status = status
+    status match {
+      case Status.RUNNING => query.startDate = new Date
+      case Status.SUCCESS | Status.ERROR => query.endDate = new Date
+    }
+    queryRepository.save(query)
+  }
+
+  def setRunning(id: Long) = setStatus(id, Status.RUNNING)
+  def setWaiting(id: Long) = setStatus(id, Status.WAITING)
+  def setError(id: Long) = setStatus(id, Status.ERROR)
+  def setSuccess(id: Long) = setStatus(id, Status.SUCCESS)
+  def setWarning(id: Long) = setStatus(id, Status.WARNING)
 
 }

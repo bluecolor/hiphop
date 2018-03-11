@@ -1,4 +1,4 @@
-package io.blue.model
+package io.blue.model.query
 
 import scala.collection.JavaConversions._
 import java.util.Date
@@ -15,9 +15,11 @@ import org.springframework.web.multipart.MultipartFile
 class QueryRequest {
 
   @BeanProperty
-  var connections: java.util.List[Connection] = _
+  var connections: java.util.Set[Connection] = _
 
   @BeanProperty
   var query: String = _
 
+  @BeanProperty
+  var export: Boolean = false
 }

@@ -4,12 +4,15 @@ import moment from 'moment'
 import _ from 'lodash'
 
 const LOAD = 'LOAD'
-const QUERY_RESULT = 'QUERY'
+const QUERY_RESULT = 'QUERY_RESULT'
 const ADD_LOG = 'ADD_LOG'
+const CLEAR_RESULT = 'CLEAR_RESULT'
+const SET_RUNNING = 'SET_RUNNING'
 
 const state = {
+  running: false,
   queries: [],
-  results: [],
+  result: undefined,
   logs: []
 }
 
@@ -21,17 +24,34 @@ setInterval(() => {
 }, 60 * 1000)
 
 const getters = {
-  results: state => state.results,
+  result: state => state.result,
   logs: state => state.logs,
-  queries: state => state.queries
+  queries: state => state.queries,
+  isRunning: state => state.running
 }
 
 // actions
 const actions = {
   query ({commit, dispatch}, payload) {
-    api.query(payload).then(response => {
-      //
+    commit(CLEAR_RESULT)
+    commit(SET_RUNNING, true)
+    return new Promise((resolve, reject) => {
+      return api.query(payload).then(response => {
+        commit(QUERY_RESULT, response.data)
+        dispatch('notifications/snackSuccess', 'Query finished', {root: true})
+        commit(SET_RUNNING, false)
+        resolve(response.data)
+      },
+      error => {
+        commit(SET_RUNNING, false)
+        console.log(error.response.data.message)
+        dispatch('notifications/snackError', 'Failed to get query result', {root: true})
+        reject(error.response.data.message)
+      })
     })
+  },
+  download ({commit, dispatch}, id) {
+    window.location = `api/v1/queries/export/${id}`
   },
   findAll ({commit, dispatch}) {
     api.findAll().then(response => {
@@ -76,15 +96,26 @@ const actions = {
 
 // mutations
 const mutations = {
-  [QUERY_RESULT] (state, results) {
-    state.results = results
+  [QUERY_RESULT] (state, payload) {
+    const id = payload.query.id
+    const query = _.find(state.queries, {id})
+    if (!query) {
+      state.queries.splice(0, 0, payload.query)
+    }
+    state.result = payload
   },
   [ADD_LOG] (state, payload) {
     payload.time = new Date()
     state.logs.splice(0, 0, payload)
   },
   [LOAD] (state, data) {
-    state.queries = data
+    state.queries = _.orderBy(data, ['startDate'], ['dsc'])
+  },
+  [CLEAR_RESULT] (state) {
+    state.result = undefined
+  },
+  [SET_RUNNING] (state, b) {
+    state.running = b
   }
 }
 

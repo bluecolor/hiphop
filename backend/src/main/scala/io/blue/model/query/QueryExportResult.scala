@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import scala.beans.BeanProperty
 import io.blue.model._
 
-class QueryResult {
+class QueryExportResult {
 
   @BeanProperty
-  var results: List[QueryOrderResult] = List()
+  var results: List[QueryExportOrderResult] = List()
 
   @BeanProperty
   var query: Query = _

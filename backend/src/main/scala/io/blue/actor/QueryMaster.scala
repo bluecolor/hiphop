@@ -22,6 +22,7 @@ import io.blue.ext.SpringExtension
 import io.blue.actor.message._
 import io.blue.model._
 import io.blue.model.query._
+import io.blue.service._
 
 @Component(value="queryMaster")
 @Scope("prototype")
@@ -32,24 +33,42 @@ class QueryMaster extends Actor {
   @Autowired
   private var springExtension: SpringExtension = _
 
-  case class QueryResultContainer(sender: ActorRef = null, result: QueryResult = new QueryResult )
+  @(Autowired @setter)
+  private var queryService: QueryService = _
+
+
+  case class QueryResultContainer(sender: ActorRef, result: QueryResult = new QueryResult )
+  case class QueryExportContainer(sender: ActorRef, result: QueryExportResult = new QueryExportResult)
 
   private var results: Map[Long, QueryResultContainer] = Map()
+  private var exports: Map[Long, QueryExportContainer] = Map()
 
   def receive = {
-    case query: Query => onQuery(query)
-    case queryOrderResult: QueryOrderResult => onQueryOrderResult(queryOrderResult)
+    case m: Query => onQuery(m)
+    case m: ExportQuery => onExport(m.query)
+    case m: QueryOrderResult => onQueryOrderResult(m)
+    case m: QueryExportOrderResult => onQueryExportOrderResult(m)
     case _ => log.debug("Opps ?")
   }
 
   def onQuery(query: Query) = {
     var container = QueryResultContainer(sender)
     container.result.query = query
-    container.result.startDate = new Date
     results += (query.id -> container)
+    queryService.setRunning(query.id)
     query.connections.foreach{connection =>
-      val actor = context.actorOf(springExtension.props("queryWorker"), name=s"query-worker.${connection.id}")
+      val actor = context.actorOf(springExtension.props("queryWorker"))
       actor ! QueryOrder(query.id, query.query, connection)
+    }
+  }
+
+  def onExport(query: Query) = {
+    var container = QueryExportContainer(sender)
+    container.result.query = query
+    exports += (query.id -> container)
+    query.connections.foreach{connection =>
+      val actor = context.actorOf(springExtension.props("queryWorker"))
+      actor ! QueryExportOrder(query.id, query.query, connection)
     }
   }
 
@@ -59,15 +78,23 @@ class QueryMaster extends Actor {
       case Some(container: QueryResultContainer) =>
         container.result.results ::= r
         if(container.result.isDone) {
-          sendResult(container)
+          queryService.setSuccess(container.result.query.id)
+          sendQueryResult(container)
         }
       case _ =>
     }
   }
 
-  def sendResult(container: QueryResultContainer) {
-    container.result.endDate = new Date
+  def onQueryExportOrderResult(r: QueryExportOrderResult) = {
+  }
+
+
+  def sendQueryResult(container: QueryResultContainer) {
+    container.result.query = queryService.findOne(container.result.query.id)
     container.sender ! container.result
+  }
+
+  def sendExportResult(container: QueryResultContainer) {
   }
 
 }

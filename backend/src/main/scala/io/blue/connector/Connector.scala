@@ -36,13 +36,13 @@ class Connector(private val c: io.blue.model.Connection) {
     Column.columns(md)
   }
 
-  def data(query: String, columns: List[Column]) = {
+  def data(query: String, columns: List[Column], limit: Boolean = true) = {
     connect
     val stmt = connection.createStatement
     val rs = stmt.executeQuery(query)
     var d = List[List[String]]()
     val c = columns.zipWithIndex
-    while(rs.next && d.length < DATA_LIMIT) {
+    while(rs.next && (limit == false || d.length < DATA_LIMIT)) {
       d ::= c.map{case (_, index) => rs.getString(index+1)}
     }
     connection.close
