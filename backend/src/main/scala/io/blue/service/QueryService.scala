@@ -24,6 +24,7 @@ import java.sql.SQLException
 import io.blue.AppInit
 import io.blue.model._
 import io.blue.model.query._
+import io.blue.util._
 import io.blue.connector.Connector
 import io.blue.actor.message._
 
@@ -32,7 +33,7 @@ import io.blue.repository._
 @Service
 class QueryService @Autowired()(val queryRepository: QueryRepository)   {
 
-  val TMP_DIR = "/home/ceyhun/projects/lab/hiphop/tmp" //! change later
+  val DUMP_DIR = "/home/ceyhun/projects/lab/hiphop/tmp" //! change later
 
   @(Autowired @setter)
   private var appInit: AppInit = _
@@ -63,7 +64,7 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
       queryRepository.save(q)
     }
     if (query.isExport) {
-      new java.io.File(s"${TMP_DIR}/${query.id}").mkdir()
+      new java.io.File(s"${DUMP_DIR}/${query.id}").mkdir()
     }
     askToSupervisor(query, classOf[QueryResult])
   }
@@ -97,7 +98,7 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     var result = new QueryOrderResult
     order.startDate = new Date
     val connector = new Connector(connectionService.findOne(order.connection.id))
-    val path = s"${TMP_DIR}/${order.query.id}/${order.connection.id}"
+    val path = s"${DUMP_DIR}/${order.query.id}/${order.connection.id}"
     connector.dump(path, order.query.query)
     order.endDate = new Date
     order.status = Status.SUCCESS
@@ -106,7 +107,7 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     result
   }
 
-
+  def zip(queryId: Long) = DiskUtils.zip(s"${DUMP_DIR}/${queryId}")
 
   def setStatus(id: Long, status: String) = {
     var query = findOne(id)

@@ -15,4 +15,4 @@
 
 ### Documentation
 
-See [here](https://github.com/primeitlabs/hiphop/wiki) for user guide and documentation.
+See [here]() for user guide and documentation.

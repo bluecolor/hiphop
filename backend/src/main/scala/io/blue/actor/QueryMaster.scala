@@ -72,8 +72,13 @@ class QueryMaster extends Actor {
       case Some(container: QueryResultContainer) =>
         container.result.results ::= r
         if(container.result.isDone) {
+          if(container.result.query.isExport){
+            queryService.zip(container.result.query.id)
+          }
           queryService.setSuccess(container.result.query.id)
-          sendQueryResult(container)
+          if(!container.result.query.isExport) {
+            sendQueryResult(container)
+          }
         }
       case _ =>
     }
