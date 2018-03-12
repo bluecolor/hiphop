@@ -26,8 +26,8 @@ setInterval(() => {
 const getters = {
   result: state => state.result,
   logs: state => state.logs,
-  queries: state => _.filter(state.queries, q => !q.export),
-  exports: state => _.filter(state.queries, q => q.export),
+  queries: state => _.chain(state.queries).filter(q => !q.export).orderBy(['startDate'], ['desc']).value(),
+  exports: state => _.chain(state.queries).filter(q => q.export).orderBy(['startDate'], ['desc']).value(),
   isRunning: state => state.running
 }
 
@@ -39,7 +39,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       return api.query(payload).then(response => {
         commit(QUERY_RESULT, response.data)
-        dispatch('notifications/snackSuccess', 'Query finished', {root: true})
         commit(SET_RUNNING, false)
         resolve(response.data)
       },

@@ -51,8 +51,8 @@ class QueryMaster extends Actor {
     if(query.isExport) {
       sender ! {
         var result = new QueryResult
-        result.query.status = Status.RUNNING
         result.query = query
+        result.query.status = Status.RUNNING
         result
       }
     }

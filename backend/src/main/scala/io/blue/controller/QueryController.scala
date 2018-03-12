@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation._
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.validation.annotation._
+import javax.servlet.http.HttpServletResponse
 
 import io.blue.model._
 import io.blue.model.query._
@@ -25,5 +26,12 @@ class QueryController  @Autowired()(private val queryService: QueryService) {
   @RequestMapping(method = Array(RequestMethod.POST))
   def query (@RequestBody queryRequest: QueryRequest) =
     queryService.query(queryRequest)
+
+  @RequestMapping(value = Array("/download/{id}"), method = Array(RequestMethod.GET))
+  def download(@PathVariable("id") queryId: Long, response: HttpServletResponse) = {
+    response.setContentType("application/zip")
+    response.setHeader("Content-Disposition", s"attachment; filename=${queryId}.hiphop.zip")
+    queryService.download(queryId)
+  }
 
 }

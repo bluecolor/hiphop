@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.invoke.MethodHandles
+import org.springframework.core.io.FileSystemResource
 
 import akka.util.Timeout
 import scala.concurrent.Await
@@ -94,11 +95,17 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     result
   }
 
+  def download(queryId: Long) = {
+    val zip = s"${DUMP_DIR}/${queryId}/${queryId}.hiphop.zip"
+    new FileSystemResource(zip)
+  }
+
   def export(order: QueryOrder) = {
     var result = new QueryOrderResult
     order.startDate = new Date
-    val connector = new Connector(connectionService.findOne(order.connection.id))
-    val path = s"${DUMP_DIR}/${order.query.id}/${order.connection.id}"
+    val connection = connectionService.findOne(order.connection.id)
+    val connector = new Connector(connection)
+    val path = s"${DUMP_DIR}/${order.query.id}/${order.connection.id}.${connection.name}.csv"
     connector.dump(path, order.query.query)
     order.endDate = new Date
     order.status = Status.SUCCESS

@@ -143,7 +143,7 @@ div.query(xs12 mt-1 style="height:100%")
       v-icon(color="green") file_download
     v-spacer
     .play-container(@mouseleave="onPlayOut")
-      v-btn.palay-and-export(fab dark small color="primary" :style="`visibility:${playMenuVis};`")
+      v-btn.palay-and-export(@click="onExport" fab dark small color="primary" :style="`visibility:${playMenuVis};`")
         v-icon(dark="") file_download
       v-btn.play(icon @click="onPlay" @mouseenter="onPlayOver")
         v-icon(color="success") play_arrow
@@ -180,16 +180,11 @@ div.query(xs12 mt-1 style="height:100%")
           v-icon(x-large color="grey lighten-1") filter_vintage
           h3 Welcome to query editor
       v-expansion-panel(v-else expand)
-        v-expansion-panel-content.elevation-1(v-for="(c,i) in resultConnections" :key="c.id" :value="i === 1")
-          div.query-result(slot="header") {{c.name}}
-          v-data-table(:headers="headers" :items="items" hide-actions="")
+        v-expansion-panel-content.elevation-1(v-for="(r,i) in results" :key="r.id" :value="i === 1")
+          div.query-result(slot="header") {{r.order.connection.name}}
+          v-data-table(:headers="headers(r)" :items="tableData(r)" hide-actions="")
             template(slot="items" slot-scope="props")
-              td {{ props.item.name }}
-              td.text-xs-right {{ props.item.calories }}
-              td.text-xs-right {{ props.item.fat }}
-              td.text-xs-right {{ props.item.carbs }}
-              td.text-xs-right {{ props.item.protein }}
-              td.text-xs-right {{ props.item.iron }}
+              td.text-xs-left(v-for="(h, i) in headers(r)") {{ props.item[h.value] }}
 
 </template>
 
@@ -209,19 +204,19 @@ import 'codemirror/addon/hint/sql-hint.js'
 export default {
   data () {
     return {
-      headers: [
-        {
-          text: 'Dessert (100g serving)',
-          align: 'left',
-          sortable: false,
-          value: 'name'
-        },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
-        { text: 'Iron (%)', value: 'iron' }
-      ],
+      // headers: [
+      //   {
+      //     text: 'Dessert (100g serving)',
+      //     align: 'left',
+      //     sortable: false,
+      //     value: 'name'
+      //   },
+      //   { text: 'Calories', value: 'calories' },
+      //   { text: 'Fat (g)', value: 'fat' },
+      //   { text: 'Carbs (g)', value: 'carbs' },
+      //   { text: 'Protein (g)', value: 'protein' },
+      //   { text: 'Iron (%)', value: 'iron' }
+      // ],
       items: [
         {
           value: false,
@@ -412,6 +407,12 @@ export default {
         return this.result.query.id
       }
     },
+    results () {
+      if (!this.result) {
+        return []
+      }
+      return this.result.results
+    },
     resultConnections () {
       if (!this.result) {
         return []
@@ -471,12 +472,27 @@ export default {
       removeFav: 'remove'
     }),
     ...mapActions('notifications', [
-      'snackWarning', 'snackInfo'
+      'snackWarning', 'snackInfo', 'snackSuccess'
     ]),
     ...mapActions('queries', [
       'query',
       'log', 'logInfo', 'logError', 'logSuccess'
     ]),
+    headers (result) {
+      if (_.isEmpty(result)) { return [] }
+      return _.map(result.columns, column => {
+        return { text: column.columnLabel, value: column.columnLabel }
+      })
+    },
+    tableData (result) {
+      const columns = result.columns
+      return _.map(result.data, record => {
+        return _.reduce(record, (acc, item, index) => {
+          acc[columns[index].columnLabel] = item
+          return acc
+        }, {})
+      })
+    },
     onPlayOver () {
       this.displayPlayMenu = true
     },
@@ -546,6 +562,7 @@ export default {
       this.logInfo(`Executing query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
       this.running = true
       this.query({connections, query}).then(q => {
+        this.snackSuccess('Query finished')
         this.logSuccess(`Finished query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
       }).catch(e => {
         this.logError(e)
@@ -570,6 +587,7 @@ export default {
       this.query({connections, query, export: true}).then(q => {
         this.logSuccess(`Export request sent for query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
       }).then(q => {
+        this.snackSuccess('Export started')
         this.logSuccess(`Finished query: [ ${query} ] on ${connections.length} connection${connections.length > 1 ? 's' : ''}`)
       }).catch(e => {
         this.logError(e)
@@ -608,10 +626,11 @@ export default {
         case 'COPY_EDITOR': this.onCopyQueryEditor(i); return
       }
     },
-    onExportMenuItemClick (m, i) {
+    onExportMenuItemClick (m, id) {
       switch (m) {
-        case 'COPY_CLIP': this.onCopyQueryClip(i); return
-        case 'COPY_EDITOR': this.onCopyQueryEditor(i); return
+        case 'COPY_CLIP': this.onCopyQueryClip(id); return
+        case 'COPY_EDITOR': this.onCopyQueryEditor(id); return
+        case 'DOWNLOAD': window.location = `/api/v1/queries/download/${id}`
       }
     },
     onCopyQueryClip (id) {
@@ -711,6 +730,10 @@ body {
   display: flex;
   overflow-y: auto;
   width: 100%;
+}
+
+.query-result {
+  font-weight: 900;
 }
 
 .query-result ul.expansion-panel,

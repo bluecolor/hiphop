@@ -10,7 +10,7 @@ object DiskUtils {
   def zip(path: String, name: String = null) = {
     val dir = new File(path)
     val fileList = files(dir)
-    val zipName = if(name != null) name else s"${dir.getName}.zip"
+    val zipName = if(name != null) name else s"${path}/${dir.getName}.hiphop.zip"
 		val fos = new FileOutputStream(zipName)
     val zos = new ZipOutputStream(fos)
 
