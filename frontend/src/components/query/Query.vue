@@ -46,7 +46,7 @@ div.query(xs12 mt-1 style="height:100%")
             v-list-tile-action
               v-checkbox(color="green darken-3" v-model="connectionFilter.selectAll")
           v-divider
-          v-list(dense)
+          v-list.css-scrollbar(dense)
             v-list-tile(v-for="(c,i) in cons" v-bind:key="c.id" @click="" ripple)
               v-list-tile-content
                 v-list-tile-title {{c.name}}
@@ -127,34 +127,34 @@ div.query(xs12 mt-1 style="height:100%")
     v-model="code",
     :options="cmOptions"
   )
-  //- @drag="onDrag" @dragstart="onDragStart"
-  div#id-1.drag-handle(@mousedown="onDragStart")
-  v-progress-linear(
-    v-show="running"
-    :indeterminate="true"
-    height="2"
-    :color="progressColor"
-    style="margin:0;"
-    background-color="white"
-  )
-  v-toolbar(dense draggable="false" style="z-index:1")
-    v-btn(icon @click="console.content ='grid'")
-      v-icon(color="light-blue darken-3" :style="'opacity:' + opacity('grid')") grid_on
-    v-btn(icon @click="console.content ='logs'")
-      v-icon(color="orange" :style="'opacity:' + opacity('logs')") bug_report
-    v-btn(v-show="queryId" icon @click="download")
-      v-icon(color="green") file_download
-    v-spacer
-    .play-container(@mouseleave="onPlayOut")
-      v-btn.palay-and-export(@click="onExport" fab dark small color="primary" :style="`visibility:${playMenuVis};`")
-        v-icon(dark="") file_download
-      v-btn.play(icon @click="onPlay" @mouseenter="onPlayOver")
-        v-icon(color="success") play_arrow
-    v-btn(icon @click="onSaveFav" :disabled="!isSelected")
-      v-icon(color="pink accent-1" draggable="false") favorite
-    v-btn(icon @click="queryRightDrawer = !queryRightDrawer")
-      v-icon(v-if="queryRightDrawer") keyboard_arrow_right
-      v-icon(v-else) keyboard_arrow_left
+  div
+    div#id-1.drag-handle(@mousedown="onDragStart")
+    v-progress-linear(
+      v-show="running"
+      :indeterminate="true"
+      height="2"
+      :color="progressColor"
+      style="margin:0;"
+      background-color="white"
+    )
+    v-toolbar(dense draggable="false" style="z-index:1")
+      v-btn(icon @click="console.content ='grid'")
+        v-icon(color="light-blue darken-3" :style="'opacity:' + opacity('grid')") grid_on
+      v-btn(icon @click="console.content ='logs'")
+        v-icon(color="orange" :style="'opacity:' + opacity('logs')") bug_report
+      v-btn(v-show="queryId" icon @click="download")
+        v-icon(color="green") file_download
+      v-spacer
+      .play-container(@mouseleave="onPlayOut")
+        v-btn.palay-and-export(@click="onExport" fab dark small color="primary" :style="`visibility:${playMenuVis};`")
+          v-icon(dark="") file_download
+        v-btn.play(icon @click="onPlay" @mouseenter="onPlayOver")
+          v-icon(color="success") play_arrow
+      v-btn(icon @click="onSaveFav" :disabled="!isSelected")
+        v-icon(color="pink accent-1" draggable="false") favorite
+      v-btn(icon @click="queryRightDrawer = !queryRightDrawer")
+        v-icon(v-if="queryRightDrawer") keyboard_arrow_right
+        v-icon(v-else) keyboard_arrow_left
   div.console
     div.welcome(v-show="!console.content")
       div.welcome-message
@@ -415,7 +415,7 @@ export default {
       if (!this.result) {
         return []
       }
-      return this.result.results
+      return _.orderBy(this.result.results, (r) => r.order.connection.name)
     },
     resultConnections () {
       if (!this.result) {

@@ -1,3 +1,4 @@
+import { setInterval } from 'timers'
 
 export default {
   init () {
@@ -8,5 +9,9 @@ export default {
     this.dispatch('labels/findAll')
     this.dispatch('scripts/findMyScripts')
     this.dispatch('queries/findAll')
+
+    setInterval(() => {
+      this.dispatch('queries/findAll')
+    }, 10 * 1000)
   }
 }

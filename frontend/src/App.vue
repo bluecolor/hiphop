@@ -177,4 +177,19 @@ main.content {
   overflow-y: auto;
 } */
 
+
+/* Custom CSS Scrollbar */
+/* .css-scrollbar::-webkit-scrollbar-track {
+    background-color: #ddd;
+}
+
+.css-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    background-color: #ddd;
+}
+
+.css-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #666;
+} */
+
 </style>
