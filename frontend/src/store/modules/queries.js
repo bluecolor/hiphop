@@ -26,6 +26,7 @@ setInterval(() => {
 const getters = {
   result: state => state.result,
   logs: state => state.logs,
+  allQueries: state => state.queries,
   queries: state => _.chain(state.queries).filter(q => !q.export).orderBy(['startDate'], ['desc']).value(),
   exports: state => _.chain(state.queries).filter(q => q.export).orderBy(['startDate'], ['desc']).value(),
   isRunning: state => state.running

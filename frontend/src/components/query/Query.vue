@@ -5,50 +5,53 @@ div.query(xs12 mt-1 style="height:100%")
   v-navigation-drawer(mt-3 fixed v-model="queryRightDrawer" right="" clipped app style="z-index:0;")
     v-container.drawer-container
 
-      v-list(v-show="e1==='connections'" dense)
-        v-list-tile-content.top-filters
-          v-text-field(clearable v-model="connectionFilter.search" append-icon="search" style="padding:10px 10px 0px 10px;" )
-          v-select(
-            clearable
-            style="padding:0px 10px 0px 10px;"
-            :items="labels"
-            item-text="name"
-            item-value="id"
-            multiple
-            chips
-            max-height="auto"
-            autocomplete,
-            v-model="connectionFilter.labels"
-          )
-            template(slot="selection" slot-scope="data")
-              v-chip.chip--select-multi(
-                small
-                text-color="white"
-                :style="`border-color:${data.item.color};background-color:${data.item.color};`"
-                close
-                @input="data.parent.selectItem(data.item)"
-                :selected="data.selected"
-                :key="JSON.stringify(data.item)"
-              )
-                | {{ data.item.name }}
-            template(slot="item" slot-scope="data")
-              template(v-if="typeof data.item !== 'object'")
-                v-list-tile-content(v-text="data.item")
-              template(v-else="")
-                v-icon(v-if="!data.item.labels" left :style="'margin-right:10px; color:' + data.item.color") label
-                v-list-tile-content
-                  v-list-tile-title(v-html="data.item.name" @click="")
-        v-list-tile
-          v-list-tile-content
-            v-list-tile-title Connections
-          v-list-tile-action
-            v-checkbox(color="green darken-3" v-model="connectionFilter.selectAll")
-        v-divider
-        v-list-tile(v-for="(c,i) in cons" v-bind:key="c.id" @click="" ripple)
-          v-list-tile-content
-            v-list-tile-title {{c.name}}
-          v-list-tile-action
-            v-checkbox(color="success" v-model="connectionFilter.selected[c.id]")
+      v-layout(v-show="e1==='connections'" column style="display:flex;")
+        v-container(style="padding:0px; max-height: 140px;")
+          v-list-tile-content.top-filters(style="padding:0px;")
+            v-text-field(clearable v-model="connectionFilter.search" append-icon="search" style="padding:10px 10px 0px 10px;" )
+            v-select(
+              clearable
+              style="padding:0px 10px 0px 10px;"
+              :items="labels"
+              item-text="name"
+              item-value="id"
+              multiple
+              chips
+              max-height="auto"
+              autocomplete,
+              v-model="connectionFilter.labels"
+            )
+              template(slot="selection" slot-scope="data")
+                v-chip.chip--select-multi(
+                  small
+                  text-color="white"
+                  :style="`border-color:${data.item.color};background-color:${data.item.color};`"
+                  close
+                  @input="data.parent.selectItem(data.item)"
+                  :selected="data.selected"
+                  :key="JSON.stringify(data.item)"
+                )
+                  | {{ data.item.name }}
+              template(slot="item" slot-scope="data")
+                template(v-if="typeof data.item !== 'object'")
+                  v-list-tile-content(v-text="data.item")
+                template(v-else="")
+                  v-icon(v-if="!data.item.labels" left :style="'margin-right:10px; color:' + data.item.color") label
+                  v-list-tile-content
+                    v-list-tile-title(v-html="data.item.name" @click="")
+        v-container.connection-list-container(style="flex-direction:column")
+          v-list-tile(style="list-style-type:none;")
+            v-list-tile-content
+              v-list-tile-title Connections
+            v-list-tile-action
+              v-checkbox(color="green darken-3" v-model="connectionFilter.selectAll")
+          v-divider
+          v-list(dense)
+            v-list-tile(v-for="(c,i) in cons" v-bind:key="c.id" @click="" ripple)
+              v-list-tile-content
+                v-list-tile-title {{c.name}}
+              v-list-tile-action
+                v-checkbox(color="success" v-model="connectionFilter.selected[c.id]")
 
 
       v-layout(v-show="e1==='favorites'" column style="display:flex;")
@@ -394,6 +397,7 @@ export default {
     ]),
     ...mapGetters('queries', [
       'logs',
+      'allQueries',
       'queries',
       'exports',
       'result',
@@ -634,7 +638,7 @@ export default {
       }
     },
     onCopyQueryClip (id) {
-      const query = _.find(this.queries, {id}).query
+      const query = _.find(this.allQueries, {id}).query
       let inp = document.createElement('input')
       document.body.appendChild(inp)
       inp.value = query
@@ -644,7 +648,7 @@ export default {
       this.snackInfo('Copied query')
     },
     onCopyQueryEditor (id) {
-      const query = _.find(this.queries, {id}).query
+      const query = _.find(this.allQueries, {id}).query
       this.editor.setValue(query)
     },
     onCopyLog (log) {
@@ -753,13 +757,15 @@ body {
 .query-result,
 .logs,
 .history-list-container,
-.fav-list-container {
+.fav-list-container,
+.connection-list-container {
   bottom: 0px;
   display: flex;
   flex-direction: column;
   padding: 0px;
 }
 
+.connection-list-container ul,
 .logs ul,
 .history-list-container ul,
 .fav-list-container ul {
