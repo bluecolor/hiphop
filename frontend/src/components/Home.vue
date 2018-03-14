@@ -52,6 +52,9 @@ v-container(grid-list-md text-xs-center style="margin-top:10px;")
 </template>
 
 <script>
+
+import {mapGetters} from 'vuex'
+
 export default {
   data () {
     return {
@@ -75,6 +78,14 @@ export default {
         case 3: this.c3 = 'elevation-6'; break
       }
     }
+  },
+  computed: {
+    ...mapGetters('connections', [
+      'connections'
+    ]),
+    ...mapGetters('labels', [
+      'labels'
+    ])
   }
 }
 </script>

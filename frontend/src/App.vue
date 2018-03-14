@@ -65,11 +65,11 @@ v-app(light='')
           icon: 'cloud',
           title: 'Connections',
           to: '/connections'
-        }, {
+        }, /* {
           icon: 'storage',
           title: 'Deployments',
           to: '/deployments'
-        }, {
+        }, */ {
           icon: 'code',
           title: 'Query',
           to: '/query'
