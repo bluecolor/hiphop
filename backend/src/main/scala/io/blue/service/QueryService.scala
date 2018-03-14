@@ -1,5 +1,6 @@
 package io.blue.service
 
+import org.apache.commons.lang3.exception.ExceptionUtils
 import java.util.Date
 import scala.io.Source
 import scala.collection.JavaConversions._
@@ -86,12 +87,20 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     var result = new QueryOrderResult
     order.startDate = new Date
     val connector = new Connector(connectionService.findOne(order.connection.id))
-    result.columns = connector.columns(order.query.query)
-    result.data = connector.data(order.query.query, result.columns)
-    order.endDate = new Date
-    order.status = Status.SUCCESS
-    connector.close
-    result.order = updateOrder(order)
+    try {
+      result.columns = connector.columns(order.query.query)
+      result.data = connector.data(order.query.query, result.columns)
+      order.status = Status.SUCCESS
+    } catch {
+      case e: Exception =>
+        connector.close
+        order.status = Status.ERROR
+        result.order.message = ExceptionUtils.getStackTrace(e)
+    } finally {
+      connector.close
+      order.endDate = new Date
+      result.order = updateOrder(order)
+    }
     result
   }
 
@@ -106,11 +115,19 @@ class QueryService @Autowired()(val queryRepository: QueryRepository)   {
     val connection = connectionService.findOne(order.connection.id)
     val connector = new Connector(connection)
     val path = s"${DUMP_DIR}/${order.query.id}/${order.connection.id}.${connection.name}.csv"
-    connector.dump(path, order.query.query)
-    order.endDate = new Date
-    order.status = Status.SUCCESS
-    connector.close
-    result.order = updateOrder(order)
+    try {
+      connector.dump(path, order.query.query)
+      order.status = Status.SUCCESS
+    } catch {
+      case e: Exception =>
+        connector.close
+        order.status = Status.ERROR
+        result.order.message = ExceptionUtils.getStackTrace(e)
+    } finally {
+      connector.close
+      order.endDate = new Date
+      result.order = updateOrder(order)
+    }
     result
   }
 

@@ -213,6 +213,9 @@ export default {
         title: 'Copy query to editor',
         id: 'COPY_EDITOR'
       }, {
+        title: 'Delete',
+        id: 'Delete'
+      }, {
         title: 'Export',
         id: 'EXPORT'
       }],
@@ -222,6 +225,9 @@ export default {
       }, {
         title: 'Copy query to editor',
         id: 'COPY_EDITOR'
+      }, {
+        title: 'Delete',
+        id: 'DELETE'
       }, {
         title: 'Download',
         id: 'DOWNLOAD'

@@ -112,6 +112,9 @@
       'm.sound' (v) {
         this.setOption({ name: 'sound', value: v })
       },
+      options () {
+        return JSON.parse(this.me.options)
+      },
       show () {
         this.display = JSON.parse(this.show)
       },
@@ -119,11 +122,14 @@
         if (!this.display) {
           this.$emit('hide')
         }
+      },
+      me () {
+        this.m = _.cloneDeep(JSON.parse(this.me.options))
       }
     },
     mounted () {
       if (!this.me) { return }
-      this.m = _.cloneDeep(this.me)
+      this.m = _.cloneDeep(JSON.parse(this.me.options))
     },
     methods: {
       ...mapActions('users', [
