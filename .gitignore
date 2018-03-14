@@ -7,6 +7,7 @@ yarn-error.log*
 build
 bin
 db
+tmp
 
 # Editor directories and files
 .idea
