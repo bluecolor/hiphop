@@ -29,6 +29,9 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
   @(Autowired @setter)
   private var appInit: AppInit = _
 
+  @(Autowired @setter)
+  private var settingService: SettingService = _
+
   private val log:Logger  = LoggerFactory.getLogger(MethodHandles.lookup.lookupClass)
 
 
@@ -70,8 +73,16 @@ class UserService @Autowired()(val userRepository: UserRepository) extends UserD
 
 
   def create(user: User, system: Boolean = false) = {
-    val password = if(!system) RandomStringUtils.random(8,true,true) else user.password
-
+    val password = if(!system) {
+      val s = settingService.findMailSettings
+      if(s == None || !s.get.isActive){
+        user.username
+      } else {
+        RandomStringUtils.random(8,true,true)
+      }
+    } else {
+      user.password
+    }
     user.options = (new ObjectMapper).writeValueAsString(new UserOptions)
     user.password = new BCryptPasswordEncoder().encode(password)
     val u = userRepository.save(user)

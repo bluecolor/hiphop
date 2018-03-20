@@ -52,7 +52,7 @@ const actions = {
   remove ({ commit }, id) {
     return new Promise((resolve, reject) => {
       return api.remove(id).then(response => {
-        commit(REMOVE, response.data)
+        commit(REMOVE, response.data.id)
         resolve(response.data)
       },
       error => {
@@ -107,7 +107,9 @@ const mutations = {
   },
   [REMOVE] (state, id) {
     const i = _.findIndex(state.all, {id})
-    state.all.splice(i, 1)
+    if (i > -1) {
+      state.all.splice(i, 1)
+    }
   },
   [SET_ME] (state, payload) {
     state.me = payload
