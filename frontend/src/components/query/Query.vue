@@ -1,7 +1,7 @@
 <template lang="pug">
 
 div.query(xs12 mt-1 style="height:100%")
-  v-navigation-drawer(mt-3 fixed v-model="queryRightDrawer" right="" clipped app style="z-index:0;")
+  v-navigation-drawer(mt-3 fixed v-model="queryRightDrawer" right clipped app style="z-index:0;")
     v-container.drawer-container
 
       v-layout(v-show="e1==='connections'" column style="display:flex;")

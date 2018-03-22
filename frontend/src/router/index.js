@@ -12,6 +12,7 @@ import DeploymentOrderSteps from '@/components/deployment/DeploymentOrderSteps'
 import User from '@/components/user/User'
 import Users from '@/components/user/Users'
 import Query from '@/components/query/Query'
+import Monitor from '@/components/monitor/Monitor'
 
 Vue.use(Router)
 
@@ -66,6 +67,10 @@ export default new Router({
     }, {
       path: '/deployments/:deploymentId/orders/:orderId/steps',
       component: DeploymentOrderSteps
+    }, {
+      path: '/monitor',
+      name: 'Monitor',
+      component: Monitor
     }
   ]
 })

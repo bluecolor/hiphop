@@ -19,7 +19,10 @@
                     v-list-tile(v-for='item in menu', :key='item.title', @click='onMenuItemClick(item.id, con.id)')
                       v-list-tile-title {{ item.title }}
               v-card-text
-                div
+                v-layout(v-show="con.labels.length > 0" row wrap)
+                  v-chip(v-for="label in con.labels" text-color="white" :style="'background:'+label.color") {{label.name}}
+                v-divider(v-show="con.labels.length > 0")
+                div(style="padding-top:5px;")
                   span(:id="'url-'+con.id")
                     | {{con.url}}
               v-card-actions

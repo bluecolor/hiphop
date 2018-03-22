@@ -20,6 +20,12 @@ v-app(light='')
       v-icon(v-html="miniVariant ? 'chevron_right' : 'chevron_left'")
     v-toolbar-title(v-text='title')
     v-spacer
+    v-menu(v-show="isMonitor" bottom left)
+      v-btn(icon="" slot="activator")
+        v-icon camera
+      v-list
+        v-list-tile(v-for="(item, i) in items" :key="i" @click="")
+          v-list-tile-title {{ item.title }}
     v-btn(icon='', light='', @click="settings = true")
       v-icon settings
     v-btn(icon='', light='' @click="logut")
@@ -70,6 +76,10 @@ v-app(light='')
           title: 'Deployments',
           to: '/deployments'
         }, */ {
+          icon: 'camera',
+          title: 'Monitor',
+          to: '/monitor'
+        }, {
           icon: 'code',
           title: 'Query',
           to: '/query'
@@ -94,6 +104,9 @@ v-app(light='')
       ...mapGetters('app', [
         'version'
       ]),
+      isMonitor () {
+        return this.$route.name === 'Monitor'
+      },
       v () {
         let version = {}
         if (this.version.major) {

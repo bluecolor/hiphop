@@ -1,6 +1,6 @@
 <template lang="pug">
 div(
-  style="max-width: 700px; margin: auto; margin-top:20px;"
+  style="max-width: 700px; margin: auto; margin-top:20px; width:100%;"
   class="lighten-3"
 )
   v-card

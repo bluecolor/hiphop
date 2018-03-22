@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Temporal
 import scala.beans.BeanProperty
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 
 object Vendor {
   val MARIADB = "MARIADB"
@@ -86,5 +87,10 @@ class Connection {
       ConnectionProvider(Vendor.UNKNOWN)
     }
   }
+
+  @Transient
+  @BeanProperty
+  @JsonSerialize
+  def vendor: String = provider.vendor
 
 }

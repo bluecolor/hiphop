@@ -93,6 +93,8 @@ dependencies {
 
 
 	compile 'org.scala-lang:scala-library'
+
+
   compile fileTree(include: [
     '*.jar'
   ], dir: 'lib')

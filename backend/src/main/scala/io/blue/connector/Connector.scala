@@ -17,6 +17,7 @@ class Connector(private val c: io.blue.model.Connection) {
 
   @throws(classOf[Exception])
   def test: Boolean = {
+    DriverManager.setLoginTimeout(10) //seconds
     val con = DriverManager.getConnection(c.url, c.username, c.password)
     con.close
     true
@@ -25,9 +26,11 @@ class Connector(private val c: io.blue.model.Connection) {
   @throws(classOf[Exception])
   def connect = {
     if(!isConnected) {
-      Class.forName(c.provider.className)
+      // Class.forName(c.provider.className)
+      DriverManager.setLoginTimeout(10) //seconds
       connection = DriverManager.getConnection(c.url, c.username, c.password)
     }
+    connection
   }
 
   def columns(query: String) = {
@@ -38,7 +41,7 @@ class Connector(private val c: io.blue.model.Connection) {
     Column.columns(md)
   }
 
-  def data(query: String, columns: List[Column], limit: Boolean = true) = {
+  def data(query: String, columns: List[Column], limit: Boolean = true) : List[List[String]] = {
     connect
     val stmt = connection.createStatement
     val rs = stmt.executeQuery(query)
@@ -46,6 +49,23 @@ class Connector(private val c: io.blue.model.Connection) {
     val c = columns.zipWithIndex
     while(rs.next && (limit == false || d.length < DATA_LIMIT)) {
       d ::= c.map{case (_, index) => rs.getString(index+1)}
+    }
+    connection.close
+    d
+  }
+
+  def data(query: String, limit: Boolean): List[Map[String, String]] = {
+    val columns = this.columns(query).zipWithIndex
+    val stmt = connection.createStatement
+    val rs = stmt.executeQuery(query)
+    var d = List[Map[String, String]]()
+
+    while(rs.next && (limit == false || d.length < DATA_LIMIT)) {
+      var m = Map[String, String]()
+      columns.foreach{ case (c, i) =>
+        m += (c.columnLabel -> rs.getString(i+1))
+      }
+      d ::= m
     }
     connection.close
     d
